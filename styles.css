@@ -770,6 +770,7 @@ em { font-style: italic; }
 
 @media (max-width: 900px) {
   .sub-leaders { grid-template-columns: 1fr; }
+  .committee-row { grid-template-columns: 1fr; }
 }
 
 .leader-list {
