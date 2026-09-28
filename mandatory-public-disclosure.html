@@ -550,7 +550,29 @@
         .result-table th, .result-table td,
         .faculty-table th, .faculty-table td { padding: 8px 10px; }
       }
+
+      /* ── CMS-rendered helpers ─────────────── */
+      .cms-pending .page-body,
+      .cms-pending .page-header-inner { opacity: 0; }
+      .page-body, .page-header-inner { transition: opacity 250ms ease; }
+      .doc-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+      .disc-subhead {
+        padding: 14px 20px;
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        background: var(--cream-dark);
+      }
+      .disc-subhead strong { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+      .disc-note { padding: 16px 20px; background: var(--cream); border-top: 1px solid var(--line); }
+      .disc-note p { margin: 0; font-size: 0.78rem; color: var(--muted); }
+      .disc-note strong { color: var(--ink); }
+      .disc-note a, .info-table a, .disc-rich a { color: var(--maroon); font-weight: 600; }
+      .disc-rich { padding: 18px 20px; font-size: 0.92rem; }
     </style>
+    <!-- Content is managed from /admin. The HTML below is the fallback shown
+         if the content database can't be reached. -->
+    <script>document.documentElement.classList.add('cms-pending');</script>
+    <script type="module" src="assets/cms/disclosure.js"></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
