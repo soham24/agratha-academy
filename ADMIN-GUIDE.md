@@ -18,7 +18,25 @@ The website can now be edited from a browser (phone or computer) at
 | Upload photos, PDFs, videos | **Photos & files** (or the Upload button next to any photo field) |
 | Who can log in | **Admins** |
 
-Changes appear on the website as soon as you press **Save**.
+Changes appear on the website as soon as you press **Save** (or Ctrl + S).
+
+### Live preview
+The Home page, Disclosure page and *Menu, footer & site* screens show a
+**live preview** of the real page next to the form. On a phone, use the
+**Edit / Preview** tabs.
+- Everything you type shows in the preview straight away. Visitors see
+  nothing until you press **Save**.
+- **Click any part of the preview** to open that section's editor.
+- Switch the preview between **Computer** and **Phone** size.
+- Hidden sections appear faded in the preview. Visitors don't see them.
+- **Undo changes** puts back the last saved version.
+
+### Arranging sections
+- Drag the **⋮⋮** handle to move a section. On phones, use the **⋯** menu:
+  Move up / Move down.
+- **⋯ → Add a section above/below** inserts a new section in that exact spot.
+- The switch on each row shows or hides a section instantly.
+- To add a photo, drop the file straight onto any photo box.
 
 Announcements can be scheduled with **Start showing from** / **Stop
 showing after**. They appear and disappear by themselves.

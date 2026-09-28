@@ -518,7 +518,11 @@ export function renderSections(sections, ctx = {}) {
     const fn = HOME_RENDERERS[s.type];
     if (!fn) return '';
     try {
-      return fn(s.data ?? {}, s.anchor || '', ctx);
+      const html = fn(s.data ?? {}, s.anchor || '', ctx);
+      // In the admin preview each section is tagged so it can be clicked / highlighted.
+      return ctx.preview
+        ? `<div class="cms-block${s.visible === false ? ' is-hidden-section' : ''}" data-cms-id="${esc(s.id)}">${html}</div>`
+        : html;
     } catch (err) {
       console.error('Could not render section', s.type, err);
       return '';

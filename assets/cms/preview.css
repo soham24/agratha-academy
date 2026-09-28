@@ -1,0 +1,19 @@
+/* Only loaded inside the admin panel's live preview. */
+html.cms-preview { scroll-behavior: auto; }
+.cms-preview .animate-in { opacity: 1 !important; transform: none !important; transition: none !important; }
+.cms-preview .cms-block { display: contents; }
+.cms-preview .cms-block > * { cursor: pointer; }
+.cms-preview .cms-block > *:hover {
+  outline: 3px dashed rgba(238, 138, 58, 0.9);
+  outline-offset: -3px;
+}
+.cms-preview .cms-block.is-focused > * {
+  outline: 4px solid #EE8A3A;
+  outline-offset: -4px;
+}
+.cms-preview .cms-block.is-hidden-section > * {
+  opacity: 0.35;
+  filter: grayscale(0.7);
+}
+.cms-preview .announce-modal,
+.cms-preview .wa-float { display: none !important; }

@@ -109,12 +109,15 @@ const R = {
   disc_text: (d) => `<div class="disc-rich">${rich(d.body)}</div>`,
 };
 
-export function renderDisclosureSections(sections) {
+export function renderDisclosureSections(sections, { preview = false } = {}) {
   let n = 0;
   return sections.map((s) => {
     const fn = R[s.type];
     if (!fn) return '';
-    return frame(s, LETTERS[n++ % 26], fn(s.data ?? {}));
+    const html = frame(s, LETTERS[n++ % 26], fn(s.data ?? {}));
+    return preview
+      ? `<div class="cms-block${s.visible === false ? ' is-hidden-section' : ''}" data-cms-id="${esc(s.id)}">${html}</div>`
+      : html;
   }).join('');
 }
 
