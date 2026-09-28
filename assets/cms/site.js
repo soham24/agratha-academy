@@ -10,6 +10,7 @@ import { renderSections, renderNav, renderFooter } from './render-home.js';
 import { esc, inline, paragraphs, safeUrl } from './format.js';
 import { icon } from './icons.js';
 import { DEFAULT_SITE } from './defaults.js';
+import { IS_PREVIEW, startPreview } from './preview-mode.js';
 
 const root = document.documentElement;
 const main = document.getElementById('main');
@@ -45,7 +46,7 @@ function applySettings(s) {
 
 function paint(payload) {
   const settings = { ...DEFAULT_SITE, ...(payload.settings?.site ?? {}) };
-  const html = renderSections(payload.sections, { announcements: payload.announcements });
+  const html = renderSections(payload.sections, { announcements: payload.announcements, preview: IS_PREVIEW });
   if (!html.trim()) return false;
   main.innerHTML = html;
   applySettings(settings);
@@ -199,4 +200,11 @@ async function boot() {
   maybeShowPopup(settings, announcements);
 }
 
-boot();
+if (IS_PREVIEW) {
+  clearTimeout(revealTimer);
+  startPreview((payload) => {
+    if (!paint(payload)) main.innerHTML = '<p style="padding:160px 24px;text-align:center;color:#7A6A6B">This page has no visible sections yet.</p>';
+  });
+} else {
+  boot();
+}

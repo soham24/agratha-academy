@@ -146,7 +146,7 @@ function mediaField(field, obj, ctx, row, id, help) {
     <div class="media-input">
       <div class="media-preview"></div>
       <div class="media-controls">
-        <input type="text" id="${id}" value="${esc(obj[field.key] ?? '')}" placeholder="${kind === 'video' ? 'Paste a YouTube link or upload a video' : 'Upload, choose from library, or paste a link'}" spellcheck="false">
+        <input type="text" id="${id}" value="${esc(obj[field.key] ?? '')}" placeholder="${kind === 'video' ? 'Paste a YouTube link, or upload / drop a video' : 'Upload, drop a file here, or choose from library'}" spellcheck="false">
         <div class="media-buttons">
           <label class="btn btn-small">
             ${icon('download', { size: 15, stroke: 2, attrs: 'style="transform:rotate(180deg)"' })} Upload
@@ -190,10 +190,7 @@ function mediaField(field, obj, ctx, row, id, help) {
     const url = await ctx.media.pick(kind);
     if (url) set(url);
   });
-  row.querySelector('input[type=file]').addEventListener('change', async (e) => {
-    const file = e.target.files?.[0];
-    e.target.value = '';
-    if (!file) return;
+  async function uploadPicked(file) {
     status.textContent = 'Uploading…';
     status.className = 'upload-status is-busy';
     try {
@@ -205,6 +202,25 @@ function mediaField(field, obj, ctx, row, id, help) {
       status.textContent = err.message || 'Upload failed';
       status.className = 'upload-status is-error';
     }
+  }
+  row.querySelector('input[type=file]').addEventListener('change', (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (file) uploadPicked(file);
+  });
+  const drop = row.querySelector('.media-input');
+  drop.addEventListener('dragover', (e) => {
+    if (![...(e.dataTransfer?.types ?? [])].includes('Files')) return;
+    e.preventDefault();
+    drop.classList.add('is-drop');
+  });
+  drop.addEventListener('dragleave', () => drop.classList.remove('is-drop'));
+  drop.addEventListener('drop', (e) => {
+    drop.classList.remove('is-drop');
+    const file = e.dataTransfer?.files?.[0];
+    if (!file) return;
+    e.preventDefault();
+    uploadPicked(file);
   });
   return row;
 }
@@ -227,6 +243,12 @@ function listField(field, obj, ctx, row) {
   const box = row.querySelector('.list-items');
   const count = row.querySelector('.list-count');
 
+  const imageKey = field.fields.find((f) => f.type === 'image')?.key;
+  const thumbOf = (item) => {
+    const url = imageKey && item?.[imageKey];
+    return url ? `<img class="list-thumb" src="${esc(ctx.resolveUrl ? ctx.resolveUrl(url) : url)}" alt="">` : '';
+  };
+
   const titleOf = (item, i) => {
     const t = item?.[field.itemLabel] ?? '';
     const text = String(t).replace(/[*\n]/g, ' ').trim();
@@ -244,6 +266,7 @@ function listField(field, obj, ctx, row) {
         <div class="list-item-head">
           <button type="button" class="list-toggle" aria-expanded="${openSet.has(item)}">
             <span class="chev" aria-hidden="true">▸</span>
+            ${thumbOf(item)}
             <span class="list-item-title">${esc(titleOf(item, i))}</span>
           </button>
           <div class="list-item-actions">

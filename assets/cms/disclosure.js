@@ -5,6 +5,7 @@ import { loadPage, readCache, writeCache } from './api.js';
 import { renderDisclosureSections, renderDisclosureNav } from './render-disclosure.js';
 import { esc, inline } from './format.js';
 import { DEFAULT_DISCLOSURE } from './defaults.js';
+import { IS_PREVIEW, startPreview } from './preview-mode.js';
 
 const root = document.documentElement;
 const reveal = () => root.classList.remove('cms-pending');
@@ -15,7 +16,7 @@ function paint(payload) {
   if (!content || !payload?.sections?.length) return false;
   const s = { ...DEFAULT_DISCLOSURE, ...(payload.settings?.disclosure ?? {}) };
 
-  content.innerHTML = renderDisclosureSections(payload.sections);
+  content.innerHTML = renderDisclosureSections(payload.sections, { preview: IS_PREVIEW });
   const nav = document.querySelector('.sidebar-nav');
   if (nav) nav.innerHTML = renderDisclosureNav(payload.sections);
 
@@ -54,4 +55,9 @@ async function boot() {
   if (location.hash.length > 1) document.getElementById(location.hash.slice(1))?.scrollIntoView();
 }
 
-boot();
+if (IS_PREVIEW) {
+  clearTimeout(revealTimer);
+  startPreview(paint);
+} else {
+  boot();
+}
