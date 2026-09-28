@@ -27,7 +27,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;0,800;0,900;1,400;1,700&family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,400&display=swap" rel="stylesheet">
     <link rel="preload" href="assets/photos/schoolfront.jpg" as="image">
     <link rel="stylesheet" href="styles.css">
+    <!-- Content is managed from /admin. The HTML below is the fallback shown
+         if the content database can't be reached. -->
+    <script>document.documentElement.classList.add('cms-pending');</script>
     <script defer src="script.js"></script>
+    <script type="module" src="assets/cms/site.js"></script>
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -98,8 +102,6 @@
         <a href="#academics">Academics</a>
         <a href="#campus">Campus</a>
         <a href="#activities">Activities</a>
-
-        <a href="#gallery">Gallery</a>
         <a href="mandatory-public-disclosure.html" target="_blank">Disclosure</a>
         <a class="nav-cta" href="#contact">Admissions</a>
       </nav>
@@ -830,8 +832,6 @@
           <a href="#academics">Academics</a>
           <a href="#activities">Activities</a>
           <a href="#campus">Campus</a>
-  
-          <a href="#gallery">Gallery</a>
           <a href="mandatory-public-disclosure.html" target="_blank">Disclosure</a>
           <a href="#contact">Contact</a>
         </nav>
