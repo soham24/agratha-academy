@@ -342,6 +342,9 @@ const check = (cond, label) => {
   await page.waitForFunction((sectionId) => document.querySelector('#save-state')?.textContent?.includes('Saved at'), aboutId);
   check(db.aa_sections.find((s) => s.id === aboutId).data.heading === 'Second change while saving', 'second save publishes newer edits');
   await page.unroute('**/rest/v1/aa_sections?**', delaySectionSave);
+  await heading.fill('A Century of Learning.\n*Edited by admin.*');
+  await page.click('#save');
+  await page.waitForFunction(() => document.querySelector('#save-state')?.textContent?.includes('Saved at'));
 
   // undo
   await heading.fill('Something wrong');
