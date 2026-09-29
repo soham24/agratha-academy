@@ -663,6 +663,76 @@ function uniqueAnchor(base, sections) {
   return anchor;
 }
 
+// ── Version history ──────────────────────────────────────────────
+const whenText = (iso) => new Date(iso).toLocaleString([], { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+/** A short line of text that identifies a version, e.g. its heading. */
+function snippetOf(row) {
+  const d = row?.data ?? {};
+  const text = [d.heading, d.title, d.kicker, d.text, d.intro, d.lead, d.subtitle]
+    .find((v) => typeof v === 'string' && v.trim()) ?? JSON.stringify(d);
+  const clean = text.replace(/[*\n]+/g, ' ').replace(/\s+/g, ' ').trim();
+  return `“${clean.length > 70 ? clean.slice(0, 70) + '…' : clean}”${row.visible === false ? ' · hidden' : ''}`;
+}
+
+async function adminEmails() {
+  const { data } = await sb.from('aa_admins').select('user_id,email');
+  return Object.fromEntries((data ?? []).map((a) => [a.user_id, a.email]));
+}
+
+/** Lists earlier versions of a section; resolves with the chosen old row, or null. */
+function chooseRevision(sectionId) {
+  return new Promise(async (resolve) => {
+    const dlg = document.createElement('div');
+    dlg.className = 'modal';
+    dlg.innerHTML = `
+      <div class="modal-card" role="dialog" aria-modal="true" aria-label="Earlier versions">
+        <div class="modal-head"><h2>Earlier versions</h2><button type="button" class="icon-btn" data-close aria-label="Close">✕</button></div>
+        <div class="modal-body"><p class="muted">Loading…</p></div>
+      </div>`;
+    document.body.append(dlg);
+    const close = (val) => { dlg.remove(); resolve(val); };
+    dlg.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(null); });
+    dlg.addEventListener('click', (e) => { if (e.target === dlg || e.target.closest('[data-close]')) close(null); });
+
+    const [{ data: revs, error }, emails] = await Promise.all([
+      sb.from('aa_revisions').select('id,created_at,created_by,row')
+        .eq('target', 'section').eq('target_id', sectionId).eq('action', 'update')
+        .order('id', { ascending: false }).limit(30),
+      adminEmails(),
+    ]);
+    const body = $('.modal-body', dlg);
+    if (error) { body.innerHTML = `<p class="error-box">${esc(friendlyError(error))}</p>`; return; }
+    if (!revs.length) {
+      body.innerHTML = '<p class="muted">No earlier versions yet. Every time you save, the previous version is kept here (the last 30).</p>';
+      return;
+    }
+    body.innerHTML = `
+      <p class="muted small">Each entry is how this section looked <b>before</b> a change. Loading one puts it in the form and preview; nothing changes on the website until you press Save.</p>
+      <ul class="rev-list">
+        ${revs.map((r, i) => `
+        <li>
+          <div>
+            <strong>Before ${esc(whenText(r.created_at))}</strong>
+            <span class="rev-snippet">${esc(snippetOf(r.row))}</span>
+            <small class="muted">${r.created_by && emails[r.created_by] ? `changed by ${esc(emails[r.created_by])}` : ''}</small>
+          </div>
+          <button type="button" class="btn btn-small btn-light" data-rev="${i}">Load this version</button>
+        </li>`).join('')}
+      </ul>`;
+    body.querySelectorAll('[data-rev]').forEach((b) => b.addEventListener('click', () => close(revs[Number(b.dataset.rev)].row)));
+  });
+}
+
+/** Sections deleted from a page that can still be brought back. */
+async function deletedSections(page, currentIds) {
+  const { data } = await sb.from('aa_revisions').select('id,target_id,created_at,created_by,row')
+    .eq('target', 'section').eq('action', 'delete').eq('page', page)
+    .order('id', { ascending: false }).limit(50);
+  const seen = new Set(currentIds);
+  return (data ?? []).filter((r) => !seen.has(r.target_id) && seen.add(r.target_id));
+}
+
 async function viewSections(view, page) {
   const types = SECTION_TYPES[page];
   const info = PAGE_INFO[page];
@@ -688,6 +758,7 @@ async function viewSections(view, page) {
         ${page === 'disclosure' ? '<details class="panel settings-details"><summary>Page header, sidebar & footer</summary><div id="disc-settings"></div></details>' : ''}
         <ol class="section-list" id="section-list"></ol>
         <button type="button" class="add-section-btn" id="add-end">+ Add a section</button>
+        <button type="button" class="btn-link trash-link" id="trash" hidden></button>
       </div>
       <div class="builder-preview" id="preview"></div>
     </div>`;
@@ -820,11 +891,12 @@ async function viewSections(view, page) {
       refreshPreview();
     }
     if (act === 'del') {
-      if (!confirm(`Delete the “${sectionName(s, types)}” section? This cannot be undone.\n\nTip: you can hide it instead with the switch.`)) return;
-      await run(sb.from('aa_sections').delete().eq('id', s.id), 'Section deleted');
+      if (!confirm(`Delete the “${sectionName(s, types)}” section?\n\nYou can bring it back later from “Recently deleted”. To take it off the website for now, you can also just switch it off.`)) return;
+      await run(sb.from('aa_sections').delete().eq('id', s.id), 'Section deleted — you can restore it from “Recently deleted”');
       sections.splice(i, 1);
       renderList();
       refreshPreview();
+      loadTrash();
     }
   });
 
@@ -882,6 +954,58 @@ async function viewSections(view, page) {
 
   $('#add-end').addEventListener('click', () => addAt(sections.length));
 
+  // ── Recently deleted sections ──
+  let trash = [];
+  const trashBtn = $('#trash');
+  async function loadTrash() {
+    trash = await deletedSections(page, sections.map((s) => s.id));
+    trashBtn.hidden = !trash.length;
+    trashBtn.textContent = `🗑 Recently deleted (${trash.length}) — restore`;
+  }
+  trashBtn.addEventListener('click', () => {
+    const dlg = document.createElement('div');
+    dlg.className = 'modal';
+    dlg.innerHTML = `
+      <div class="modal-card" role="dialog" aria-modal="true" aria-label="Recently deleted sections">
+        <div class="modal-head"><h2>Recently deleted</h2><button type="button" class="icon-btn" data-close aria-label="Close">✕</button></div>
+        <div class="modal-body">
+          <ul class="rev-list">
+            ${trash.map((r, i) => `
+            <li>
+              <div>
+                <strong>${typeIcon(r.row.type)} ${esc(sectionName(r.row, types))}</strong>
+                <small class="muted">Deleted ${esc(whenText(r.created_at))}</small>
+              </div>
+              <button type="button" class="btn btn-small btn-primary" data-restore="${i}">Restore</button>
+            </li>`).join('')}
+          </ul>
+        </div>
+      </div>`;
+    document.body.append(dlg);
+    dlg.addEventListener('click', async (e) => {
+      if (e.target === dlg || e.target.closest('[data-close]')) { dlg.remove(); return; }
+      const b = e.target.closest('[data-restore]');
+      if (!b) return;
+      b.disabled = true;
+      const old = trash[Number(b.dataset.restore)].row;
+      const [row] = await run(sb.from('aa_sections').insert({
+        id: old.id, page, type: old.type, label: old.label,
+        anchor: old.anchor ? uniqueAnchor(old.anchor, sections) : '',
+        position: old.position, visible: old.visible, data: old.data,
+      }).select('*'));
+      const at = sections.findIndex((x) => x.position > old.position);
+      sections.splice(at < 0 ? sections.length : at, 0, row);
+      await savePositions(sections);
+      selected = row.id;
+      dlg.remove();
+      toast(`“${sectionName(row, types)}” is back`);
+      renderList();
+      refreshPreview();
+      activePreview?.focus(row.id);
+      loadTrash();
+    });
+  });
+
   if (page === 'disclosure') {
     await mountSettingsForm($('#disc-settings'), 'disclosure', DISCLOSURE_SETTINGS_FIELDS, DEFAULT_DISCLOSURE, '', (settingsData) => {
       data.settings.disclosure = settingsData;
@@ -891,6 +1015,7 @@ async function viewSections(view, page) {
 
   renderList();
   refreshPreview();
+  loadTrash();
 }
 
 function chooseSectionType(page) {
@@ -956,11 +1081,13 @@ async function viewSectionEdit(view, page, id) {
               <span id="vis-label"></span>
             </label>
             <div class="editor-actions">
+              <button type="button" class="btn btn-light btn-small" id="history" title="See and restore earlier versions">🕘 History</button>
               <button type="button" class="btn btn-light btn-small" id="discard" disabled>Undo changes</button>
               <button type="button" class="btn btn-primary" id="save" data-save-main disabled>Save</button>
             </div>
           </div>
           <p class="save-state" id="save-state" role="status">No changes yet. Everything you type shows in the preview straight away.</p>
+          <div class="draft-banner" id="draft-banner" hidden></div>
         </div>
         <div class="mobile-tabs" role="tablist">
           <button type="button" class="is-active" data-tab="side">Edit</button>
@@ -1001,20 +1128,82 @@ async function viewSectionEdit(view, page, id) {
     timer = setTimeout(() => activePreview?.update(currentPayload(), { focus: id }), 150);
   };
 
+  const draftKey = `agratha-admin:draft:${id}`;
+  let draftTimer;
+  const saveDraft = () => {
+    clearTimeout(draftTimer);
+    draftTimer = setTimeout(() => {
+      try { localStorage.setItem(draftKey, JSON.stringify({ at: Date.now(), meta, data })); } catch { /* storage full or blocked */ }
+    }, 400);
+  };
+  const clearDraft = () => {
+    clearTimeout(draftTimer);
+    try { localStorage.removeItem(draftKey); } catch { /* ignore */ }
+  };
+
   const onChange = () => {
     setDirty(true);
     saveBtn.disabled = false;
     discardBtn.disabled = false;
     state.textContent = 'Unsaved changes — press Save (or Ctrl + S) to publish.';
     state.className = 'save-state is-dirty';
+    saveDraft();
     refresh();
   };
 
-  $('#form-slot').append(buildForm(def.fields, data, formCtx(onChange)));
-  $('#meta-slot').append(buildForm([
-    { key: 'label', label: 'Section name (shown only here in the admin)', type: 'text' },
-    { key: 'anchor', label: 'Menu link ID', type: 'text', help: `Menu links to this section use #${meta.anchor || 'id'}. Letters, numbers and dashes only.` },
-  ], meta, formCtx(() => { $('#editor-name').textContent = meta.label || def.label; onChange(); })));
+  function mountForms() {
+    $('#form-slot').replaceChildren(buildForm(def.fields, data, formCtx(onChange)));
+    $('#meta-slot').replaceChildren(buildForm([
+      { key: 'label', label: 'Section name (shown only here in the admin)', type: 'text' },
+      { key: 'anchor', label: 'Menu link ID', type: 'text', help: `Menu links to this section use #${meta.anchor || 'id'}. Letters, numbers and dashes only.` },
+    ], meta, formCtx(() => { $('#editor-name').textContent = meta.label || def.label; onChange(); })));
+    $('#vis').checked = !!meta.visible;
+    $('#editor-name').textContent = meta.label || def.label;
+    visLabel();
+  }
+
+  /** Put a snapshot (draft or older version) into the form without saving it. */
+  function loadSnapshot(snap) {
+    Object.keys(data).forEach((k) => delete data[k]);
+    Object.assign(data, structuredClone(def.defaults ?? {}), structuredClone(snap.data ?? {}));
+    // Drafts carry name/link/visibility; older versions only bring back
+    // content, so they never unexpectedly show or hide the section.
+    if (snap.meta) Object.assign(meta, snap.meta);
+    mountForms();
+    onChange();
+  }
+
+  mountForms();
+
+  // Offer to bring back edits that were never saved (tab closed, phone locked…).
+  try {
+    const draft = JSON.parse(localStorage.getItem(draftKey) || 'null');
+    if (draft && JSON.stringify({ m: draft.meta, d: draft.data }) !== JSON.stringify({ m: meta, d: data })) {
+      const banner = $('#draft-banner');
+      const when = new Date(draft.at).toLocaleString([], { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+      banner.innerHTML = `
+        <span>📝 You have unsaved changes from <b>${esc(when)}</b>.</span>
+        <span class="draft-actions">
+          <button type="button" class="btn btn-primary btn-small" data-draft="restore">Restore them</button>
+          <button type="button" class="btn-link" data-draft="drop">Discard</button>
+        </span>`;
+      banner.hidden = false;
+      banner.addEventListener('click', (e) => {
+        const act = e.target.closest('[data-draft]')?.dataset.draft;
+        if (!act) return;
+        banner.hidden = true;
+        if (act === 'restore') { loadSnapshot({ meta: draft.meta, data: draft.data }); toast('Unsaved changes restored — press Save to publish'); }
+        else clearDraft();
+      });
+    }
+  } catch { /* ignore corrupt drafts */ }
+
+  $('#history').addEventListener('click', async () => {
+    const snap = await chooseRevision(id);
+    if (!snap) return;
+    loadSnapshot(snap);
+    toast('Earlier version loaded into the form — check the preview, then press Save to publish it');
+  });
 
   $('#vis').addEventListener('change', (e) => { meta.visible = e.target.checked; visLabel(); onChange(); });
 
@@ -1025,6 +1214,7 @@ async function viewSectionEdit(view, page, id) {
 
   discardBtn.addEventListener('click', () => {
     if (!confirm('Undo all changes since the last save?')) return;
+    clearDraft();
     setDirty(false);
     route();
   });
@@ -1037,6 +1227,7 @@ async function viewSectionEdit(view, page, id) {
       await run(sb.from('aa_sections').update({ label: meta.label, anchor, visible: meta.visible, data }).eq('id', id), meta.visible ? 'Saved — live on the website' : 'Saved (section is hidden)');
       meta.anchor = anchor;
       Object.assign(section, meta, { data: structuredClone(data) });
+      clearDraft();
       setDirty(false);
       discardBtn.disabled = true;
       const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -1264,7 +1455,15 @@ async function viewAdmins(view) {
 // ═════════════════════════════════════════════════════════════════
 let recovering = /type=recovery/.test(location.hash);
 
-async function start() {
+// Several things can trigger a start at page load (the initial call and the
+// auth library's SIGNED_IN event); run only one at a time.
+let starting = null;
+function start() {
+  starting ??= doStart().finally(() => { starting = null; });
+  return starting;
+}
+
+async function doStart() {
   const { data: { session } } = await sb.auth.getSession();
   user = session?.user ?? null;
   if (!user) { showLogin(); return; }
@@ -1276,6 +1475,7 @@ async function start() {
     return;
   }
   if (!isAdmin) { showNotAllowed(); return; }
+  if (app.querySelector('.layout')) return; // already running
 
   shell();
   if (!location.hash.startsWith('#/')) history.replaceState(null, '', '#/dashboard');

@@ -552,9 +552,6 @@
       }
 
       /* ── CMS-rendered helpers ─────────────── */
-      .cms-pending .page-body,
-      .cms-pending .page-header-inner { opacity: 0; }
-      .page-body, .page-header-inner { transition: opacity 250ms ease; }
       .doc-btns { display: flex; gap: 8px; flex-wrap: wrap; }
       .disc-subhead {
         padding: 14px 20px;
@@ -569,10 +566,10 @@
       .disc-note a, .info-table a, .disc-rich a { color: var(--maroon); font-weight: 600; }
       .disc-rich { padding: 18px 20px; font-size: 0.92rem; }
     </style>
-    <!-- Content is managed from /admin. The HTML below is the fallback shown
-         if the content database can't be reached. -->
-    <script>document.documentElement.classList.add('cms-pending');</script>
+    <!-- Content is managed from /admin. scripts/prerender.mjs copies it into
+         this HTML every few hours; the page script updates it live. -->
     <script type="module" src="assets/cms/disclosure.js"></script>
+    <meta name="cms-content-hash" content="4e576d2d">
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -581,7 +578,7 @@
     <div class="top-bar">
       <div class="top-bar-brand">
         <img src="assets/photos/agratha-academy-logo.png" alt="Agratha Academy Logo">
-        <span>The Agratha Academy CBSE &nbsp;·&nbsp; Umbergaon, Gujarat</span>
+        <span><!-- cms:brandline -->The Agratha Academy CBSE  ·  Umbergaon, Gujarat<!-- /cms:brandline --></span>
       </div>
       <a class="top-bar-back" href="index.html">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
@@ -591,13 +588,11 @@
 
     <!-- PAGE HEADER -->
     <div class="page-header">
-      <div class="page-header-inner">
+      <div class="page-header-inner"><!-- cms:header -->
         <div class="page-badge">CBSE Affiliation Bye-Laws — Appendix IX</div>
         <h1>Mandatory Public Disclosure</h1>
         <p>All information published on this page is in compliance with CBSE norms.<br>This page is publicly accessible without login, as required.</p>
-        <div class="updated-tag">
-          Last Updated: <span>May 2026</span>
-        </div>
+        <div class="updated-tag">Last Updated: <span>May 2026</span></div><!-- /cms:header -->
       </div>
     </div>
 
@@ -606,595 +601,225 @@
 
       <!-- SIDEBAR -->
       <aside class="sidebar" aria-label="Page sections">
-        <nav class="sidebar-nav">
-          <div class="sidebar-nav-title">Jump to Section</div>
-          <a href="#general-info"><span class="sec-label">A</span> General Information</a>
-          <a href="#documents"><span class="sec-label">B</span> Documents</a>
-          <a href="#results"><span class="sec-label">C</span> Results &amp; Academics</a>
-          <a href="#staff"><span class="sec-label">D</span> Staff Details</a>
-          <a href="#infrastructure"><span class="sec-label">E</span> Infrastructure</a>
-        </nav>
-        <div class="sidebar-disclaimer">
-          <strong>CBSE Compliance</strong>
-          This Mandatory Public Disclosure is published as per CBSE Affiliation Bye-Laws and is updated periodically. For queries, contact the school office.
-        </div>
+        <nav class="sidebar-nav"><!-- cms:sidenav --><div class="sidebar-nav-title">Jump to Section</div><a href="#general-info"><span class="sec-label">A</span> General Information</a><a href="#documents"><span class="sec-label">B</span> Documents</a><a href="#results"><span class="sec-label">C</span> Results &amp; Academics</a><a href="#staff"><span class="sec-label">D</span> Staff Details</a><a href="#infrastructure"><span class="sec-label">E</span> Infrastructure</a><!-- /cms:sidenav --></nav>
+        <div class="sidebar-disclaimer"><!-- cms:disclaimer --><strong>CBSE Compliance</strong>This Mandatory Public Disclosure is published as per CBSE Affiliation Bye-Laws and is updated periodically. For queries, contact the school office.<!-- /cms:disclaimer --></div>
       </aside>
 
       <!-- CONTENT -->
-      <div class="content">
-
-        <!-- A. GENERAL INFORMATION -->
-        <div class="disclosure-section" id="general-info">
-          <div class="ds-header">
-            <div class="ds-letter">A</div>
-            <div>
-              <h2>General Information</h2>
-              <p>Basic school identification and contact details</p>
-            </div>
-          </div>
-          <div class="ds-body">
-            <table class="info-table">
-              <tbody>
-                <tr class="highlight">
-                  <td>School Name</td>
-                  <td>The Agratha Academy CBSE</td>
-                </tr>
-                <tr class="highlight">
-                  <td>CBSE Affiliation Number</td>
-                  <td>430444</td>
-                </tr>
-                <tr class="highlight">
-                  <td>School Code</td>
-                  <td>11442</td>
-                </tr>
-                <tr>
-                  <td>Type of Affiliation</td>
-                  <td>CBSE (Central Board of Secondary Education)</td>
-                </tr>
-                <tr>
-                  <td>Principal Name</td>
-                  <td>Vaishali Milind Churi</td>
-                </tr>
-                <tr>
-                  <td>CEO / Manager</td>
-                  <td>Anahita Zubin Najmi</td>
-                </tr>
-                <tr>
-                  <td>Chairman / Trustee</td>
-                  <td>Ishwarbhai Govanbhai Bari</td>
-                </tr>
-                <tr>
-                  <td>School Email</td>
-                  <td><a href="mailto:anahitanajmi@gmail.com" style="color:var(--maroon);font-weight:600;">anahitanajmi@gmail.com</a></td>
-                </tr>
-                <tr>
-                  <td>Contact Numbers</td>
-                  <td>
-                    <a href="tel:+919537331834" style="color:var(--maroon);font-weight:600;">+91 9537331834</a> &nbsp;/&nbsp;
-                    <a href="tel:+919545611177" style="color:var(--maroon);font-weight:600;">+91 9545611177</a>
-                  </td>
-                </tr>
-                <tr>
-                  <td>School Address</td>
-                  <td>M.M High School Compound, Behind Police Station,<br>Umbergaon – 396170, Dist. Valsad, Gujarat, India</td>
-                </tr>
-                <tr>
-                  <td>Trust / Society Name</td>
-                  <td>The Agratha Academy Trust</td>
-                </tr>
-                <tr>
-                  <td>Website</td>
-                  <td><a href="index.html" style="color:var(--maroon);font-weight:600;">theagrathaacademy.in</a></td>
-                </tr>
-                <tr>
-                  <td>Classes Offered</td>
-                  <td>Nursery to Std. X (CBSE)</td>
-                </tr>
-                <tr>
-                  <td>Medium of Instruction</td>
-                  <td>English</td>
-                </tr>
-                <tr>
-                  <td>School Category</td>
-                  <td>Co-educational, Day School</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+      <div class="content"><!-- cms:content -->
+    <div class="disclosure-section" id="general-info">
+      <div class="ds-header">
+        <div class="ds-letter">A</div>
+        <div>
+          <h2>General Information</h2>
+          <p>Basic school identification and contact details</p>
         </div>
-
-        <!-- B. DOCUMENTS -->
-        <div class="disclosure-section" id="documents">
-          <div class="ds-header">
-            <div class="ds-letter">B</div>
-            <div>
-              <h2>Documents and Information</h2>
-              <p>Mandatory certificates and regulatory documents</p>
-            </div>
-          </div>
-          <div class="ds-body">
-
-            <div class="doc-row">
-              <div class="doc-icon-wrap">
-                <svg viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-              </div>
-              <div class="doc-row-info">
-                <strong>CBSE Affiliation Letter</strong>
-                <span>Official affiliation status — No. 430444</span>
-              </div>
-              <a class="doc-btn" href="assets/docs/cbse-affiliation-status-430444.pdf" target="_blank" rel="noopener">
-                <svg viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
-                View PDF
-              </a>
-            </div>
-
-            <div class="doc-row">
-              <div class="doc-icon-wrap">
-                <svg viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-              </div>
-              <div class="doc-row-info">
-                <strong>CBSE Affiliation Status (Copy)</strong>
-                <span>Secondary copy of affiliation certificate</span>
-              </div>
-              <a class="doc-btn" href="assets/docs/cbse-affiliation-status-430444-copy.pdf" target="_blank" rel="noopener">
-                <svg viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
-                View PDF
-              </a>
-            </div>
-
-            <div class="doc-row">
-              <div class="doc-icon-wrap">
-                <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
-              </div>
-              <div class="doc-row-info">
-                <strong>Society / Trust Registration Certificate</strong>
-                <span>State registration of the managing trust</span>
-              </div>
-              <a class="doc-btn" href="assets/docs/trust_registration_optimized.pdf" target="_blank" rel="noopener">
-                <svg viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
-                View PDF
-              </a>
-            </div>
-
-            <div class="doc-row">
-              <div class="doc-icon-wrap">
-                <svg viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-              </div>
-              <div class="doc-row-info">
-                <strong>School Recognition Letter (Std. 6–8)</strong>
-                <span>State government recognition — Gujarati</span>
-              </div>
-              <a class="doc-btn" href="assets/docs/school-recognition-letter-std-6-to-8-gujarati.pdf" target="_blank" rel="noopener">
-                <svg viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
-                View PDF
-              </a>
-            </div>
-
-            <div class="doc-row">
-              <div class="doc-icon-wrap">
-                <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-              </div>
-              <div class="doc-row-info">
-                <strong>Building Safety Certificate</strong>
-                <span>Municipality building safety certification</span>
-              </div>
-              <a class="doc-btn" href="assets/docs/building-safety-certificate.pdf" target="_blank" rel="noopener">
-                <svg viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
-                View PDF
-              </a>
-            </div>
-
-            <div class="doc-row">
-              <div class="doc-icon-wrap">
-                <svg viewBox="0 0 24 24"><path d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/><path d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z"/></svg>
-              </div>
-              <div class="doc-row-info">
-                <strong>Fire Safety Certificate</strong>
-                <span>Fire NOC from competent authority</span>
-              </div>
-              <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                <a class="doc-btn" href="assets/docs/optimized_Fire Certificate.pdf" target="_blank" rel="noopener">
-                  <svg viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
-                  Certificate 1
-                </a>
-                <a class="doc-btn" href="assets/docs/optimized_fire safety certificate.pdf" target="_blank" rel="noopener">
-                  <svg viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
-                  Certificate 2
-                </a>
-              </div>
-            </div>
-
-            <div class="doc-row">
-              <div class="doc-icon-wrap">
-                <svg viewBox="0 0 24 24"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0112 2a8 8 0 018 8.2c0 7.3-8 11.8-8 11.8z"/></svg>
-              </div>
-              <div class="doc-row-info">
-                <strong>Water, Health &amp; Sanitation Certificate</strong>
-                <span>Health department certification</span>
-              </div>
-              <a class="doc-btn" href="assets/docs/Water_Health_Sanitation_Certificate_Optimized.pdf" target="_blank" rel="noopener">
-                <svg viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
-                View PDF
-              </a>
-            </div>
-
-            <div class="doc-row">
-              <div class="doc-icon-wrap">
-                <svg viewBox="0 0 24 24"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
-              </div>
-              <div class="doc-row-info">
-                <strong>Land / Property Certificate</strong>
-                <span>Land ownership or lease document</span>
-              </div>
-              <a class="doc-btn" href="assets/docs/Land_Certificate_Optimized_180dpi_q65.pdf" target="_blank" rel="noopener">
-                <svg viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
-                View PDF
-              </a>
-            </div>
-
-            <div class="doc-row">
-              <div class="doc-icon-wrap">
-                <svg viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-              </div>
-              <div class="doc-row-info">
-                <strong>DEO / Collector NOC</strong>
-                <span>No Objection Certificate from District Education Officer</span>
-              </div>
-              <a class="doc-btn" href="assets/docs/NOC_Optimized.pdf" target="_blank" rel="noopener">
-                <svg viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
-                View PDF
-              </a>
-            </div>
-
-            <div class="doc-row">
-              <div class="doc-icon-wrap">
-                <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-              </div>
-              <div class="doc-row-info">
-                <strong>Fee Regulatory Committee Provisional Order</strong>
-                <span>FRC order 2021–2024</span>
-              </div>
-              <a class="doc-btn" href="assets/docs/fee-regulatory-committee-provisional-order-2021-to-2024.pdf" target="_blank" rel="noopener">
-                <svg viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
-                View PDF
-              </a>
-            </div>
-
-            <div class="doc-row">
-              <div class="doc-icon-wrap">
-                <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              </div>
-              <div class="doc-row-info">
-                <strong>Income Tax 12AA Registration Notice</strong>
-                <span>Tax registration document</span>
-              </div>
-              <a class="doc-btn" href="assets/docs/income-tax-12aa-registration-notice.pdf" target="_blank" rel="noopener">
-                <svg viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
-                View PDF
-              </a>
-            </div>
-
-            <div class="doc-row">
-              <div class="doc-icon-wrap">
-                <svg viewBox="0 0 24 24"><path d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/></svg>
-              </div>
-              <div class="doc-row-info">
-                <strong>Academic Calendar 2026–27</strong>
-                <span>Annual academic schedule and activities</span>
-              </div>
-              <a class="doc-btn" href="assets/docs/Academic_Calendar_2026_27_FULL.pdf" target="_blank" rel="noopener">
-                <svg viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
-                View PDF
-              </a>
-            </div>
-
-
-          </div>
+      </div>
+      <div class="ds-body">
+    <table class="info-table">
+      <tbody>
+        <tr class="highlight"><td>School Name</td><td>The Agratha Academy CBSE</td></tr><tr class="highlight"><td>CBSE Affiliation Number</td><td>430444</td></tr><tr class="highlight"><td>School Code</td><td>11442</td></tr><tr><td>Type of Affiliation</td><td>CBSE (Central Board of Secondary Education)</td></tr><tr><td>Principal Name</td><td>Vaishali Milind Churi</td></tr><tr><td>CEO / Manager</td><td>Anahita Zubin Najmi</td></tr><tr><td>Chairman / Trustee</td><td>Ishwarbhai Govanbhai Bari</td></tr><tr><td>School Email</td><td><a href="mailto:anahitanajmi@gmail.com">anahitanajmi@gmail.com</a></td></tr><tr><td>Contact Numbers</td><td><a href="tel:+919537331834">+91 9537331834</a>  /  <a href="tel:+919545611177">+91 9545611177</a></td></tr><tr><td>School Address</td><td>M.M High School Compound, Behind Police Station,<br>Umbergaon – 396170, Dist. Valsad, Gujarat, India</td></tr><tr><td>Trust / Society Name</td><td>The Agratha Academy Trust</td></tr><tr><td>Website</td><td><a href="index.html">theagrathaacademy.in</a></td></tr><tr><td>Classes Offered</td><td>Nursery to Std. X (CBSE)</td></tr><tr><td>Medium of Instruction</td><td>English</td></tr><tr><td>School Category</td><td>Co-educational, Day School</td></tr>
+      </tbody>
+    </table></div>
+    </div>
+    <div class="disclosure-section" id="documents">
+      <div class="ds-header">
+        <div class="ds-letter">B</div>
+        <div>
+          <h2>Documents and Information</h2>
+          <p>Mandatory certificates and regulatory documents</p>
         </div>
-
-        <!-- C. RESULTS & ACADEMICS -->
-        <div class="disclosure-section" id="results">
-          <div class="ds-header">
-            <div class="ds-letter">C</div>
-            <div>
-              <h2>Results and Academics</h2>
-              <p>Board examination results and academic performance — 2024–25</p>
-            </div>
-          </div>
-          <div class="ds-body">
-
-            <div class="mini-stats">
-              <div class="mini-stat">
-                <strong>34</strong>
-                <span>Std. X Appeared</span>
-              </div>
-              <div class="mini-stat">
-                <strong>34</strong>
-                <span>Std. X Passed</span>
-              </div>
-              <div class="mini-stat">
-                <strong>100%</strong>
-                <span>Std. X Pass Rate</span>
-              </div>
-              <div class="mini-stat">
-                <strong>37</strong>
-                <span>Std. XII Total</span>
-              </div>
-            </div>
-
-            <table class="result-table">
-              <thead>
-                <tr>
-                  <th>Class</th>
-                  <th>Stream</th>
-                  <th>Students Registered</th>
-                  <th>Students Passed</th>
-                  <th>Pass Rate</th>
-                  <th>Academic Year</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr class="highlight-row">
-                  <td><strong>Std. X</strong></td>
-                  <td>General</td>
-                  <td>34</td>
-                  <td>34</td>
-                  <td class="pass-rate">100%</td>
-                  <td>2024–25</td>
-                </tr>
-                <tr>
-                  <td><strong>Std. XII</strong></td>
-                  <td>Science</td>
-                  <td>21</td>
-                  <td>—</td>
-                  <td>—</td>
-                  <td>2024–25</td>
-                </tr>
-                <tr>
-                  <td><strong>Std. XII</strong></td>
-                  <td>Commerce</td>
-                  <td>16</td>
-                  <td>—</td>
-                  <td>—</td>
-                  <td>2024–25</td>
-                </tr>
-              </tbody>
-            </table>
-
-            <div style="padding:16px 20px;background:var(--cream);border-top:1px solid var(--line);">
-              <p style="margin:0;font-size:0.78rem;color:var(--muted);">
-                <strong style="color:var(--ink);">Note:</strong> Subject-wise performance data and topper details are available from the school office on request. CBSE results are also verifiable at <a href="https://cbseresults.nic.in" target="_blank" rel="noopener" style="color:var(--maroon);font-weight:600;">cbseresults.nic.in</a>.
-              </p>
-            </div>
-
-          </div>
+      </div>
+      <div class="ds-body">
+      <div class="doc-row">
+        <div class="doc-icon-wrap"><svg viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
+        <div class="doc-row-info"><strong>CBSE Affiliation Letter</strong><span>Official affiliation status — No. 430444</span></div>
+        <a class="doc-btn" href="assets/docs/cbse-affiliation-status-430444.pdf" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>View PDF</a>
+      </div>
+      <div class="doc-row">
+        <div class="doc-icon-wrap"><svg viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
+        <div class="doc-row-info"><strong>CBSE Affiliation Status (Copy)</strong><span>Secondary copy of affiliation certificate</span></div>
+        <a class="doc-btn" href="assets/docs/cbse-affiliation-status-430444-copy.pdf" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>View PDF</a>
+      </div>
+      <div class="doc-row">
+        <div class="doc-icon-wrap"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg></div>
+        <div class="doc-row-info"><strong>Society / Trust Registration Certificate</strong><span>State registration of the managing trust</span></div>
+        <a class="doc-btn" href="assets/docs/trust_registration_optimized.pdf" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>View PDF</a>
+      </div>
+      <div class="doc-row">
+        <div class="doc-icon-wrap"><svg viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
+        <div class="doc-row-info"><strong>School Recognition Letter (Std. 6–8)</strong><span>State government recognition — Gujarati</span></div>
+        <a class="doc-btn" href="assets/docs/school-recognition-letter-std-6-to-8-gujarati.pdf" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>View PDF</a>
+      </div>
+      <div class="doc-row">
+        <div class="doc-icon-wrap"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        <div class="doc-row-info"><strong>Building Safety Certificate</strong><span>Municipality building safety certification</span></div>
+        <a class="doc-btn" href="assets/docs/building-safety-certificate.pdf" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>View PDF</a>
+      </div>
+      <div class="doc-row">
+        <div class="doc-icon-wrap"><svg viewBox="0 0 24 24"><path d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/><path d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z"/></svg></div>
+        <div class="doc-row-info"><strong>Fire Safety Certificate</strong><span>Fire NOC from competent authority</span></div>
+        <div class="doc-btns"><a class="doc-btn" href="assets/docs/optimized_Fire Certificate.pdf" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Certificate 1</a><a class="doc-btn" href="assets/docs/optimized_fire safety certificate.pdf" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Certificate 2</a></div>
+      </div>
+      <div class="doc-row">
+        <div class="doc-icon-wrap"><svg viewBox="0 0 24 24"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0112 2a8 8 0 018 8.2c0 7.3-8 11.8-8 11.8z"/></svg></div>
+        <div class="doc-row-info"><strong>Water, Health &amp; Sanitation Certificate</strong><span>Health department certification</span></div>
+        <a class="doc-btn" href="assets/docs/Water_Health_Sanitation_Certificate_Optimized.pdf" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>View PDF</a>
+      </div>
+      <div class="doc-row">
+        <div class="doc-icon-wrap"><svg viewBox="0 0 24 24"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg></div>
+        <div class="doc-row-info"><strong>Land / Property Certificate</strong><span>Land ownership or lease document</span></div>
+        <a class="doc-btn" href="assets/docs/Land_Certificate_Optimized_180dpi_q65.pdf" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>View PDF</a>
+      </div>
+      <div class="doc-row">
+        <div class="doc-icon-wrap"><svg viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
+        <div class="doc-row-info"><strong>DEO / Collector NOC</strong><span>No Objection Certificate from District Education Officer</span></div>
+        <a class="doc-btn" href="assets/docs/NOC_Optimized.pdf" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>View PDF</a>
+      </div>
+      <div class="doc-row">
+        <div class="doc-icon-wrap"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+        <div class="doc-row-info"><strong>Fee Regulatory Committee Provisional Order</strong><span>FRC order 2021–2024</span></div>
+        <a class="doc-btn" href="assets/docs/fee-regulatory-committee-provisional-order-2021-to-2024.pdf" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>View PDF</a>
+      </div>
+      <div class="doc-row">
+        <div class="doc-icon-wrap"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <div class="doc-row-info"><strong>Income Tax 12AA Registration Notice</strong><span>Tax registration document</span></div>
+        <a class="doc-btn" href="assets/docs/income-tax-12aa-registration-notice.pdf" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>View PDF</a>
+      </div>
+      <div class="doc-row">
+        <div class="doc-icon-wrap"><svg viewBox="0 0 24 24"><path d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/></svg></div>
+        <div class="doc-row-info"><strong>Academic Calendar 2026–27</strong><span>Annual academic schedule and activities</span></div>
+        <a class="doc-btn" href="assets/docs/Academic_Calendar_2026_27_FULL.pdf" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>View PDF</a>
+      </div></div>
+    </div>
+    <div class="disclosure-section" id="results">
+      <div class="ds-header">
+        <div class="ds-letter">C</div>
+        <div>
+          <h2>Results and Academics</h2>
+          <p>Board examination results and academic performance — 2024–25</p>
         </div>
-
-        <!-- D. STAFF DETAILS -->
-        <div class="disclosure-section" id="staff">
-          <div class="ds-header">
-            <div class="ds-letter">D</div>
-            <div>
-              <h2>Staff Details</h2>
-              <p>Teaching and non-teaching staff composition</p>
-            </div>
-          </div>
-          <div class="ds-body">
-
-            <div class="mini-stats">
-              <div class="mini-stat">
-                <strong>48</strong>
-                <span>Total Staff</span>
-              </div>
-              <div class="mini-stat">
-                <strong>12</strong>
-                <span>PGT</span>
-              </div>
-              <div class="mini-stat">
-                <strong>7</strong>
-                <span>TGT</span>
-              </div>
-              <div class="mini-stat">
-                <strong>8</strong>
-                <span>PRT</span>
-              </div>
-              <div class="mini-stat">
-                <strong>16</strong>
-                <span>Teachers</span>
-              </div>
-              <div class="mini-stat">
-                <strong>2</strong>
-                <span>Part-time</span>
-              </div>
-              <div class="mini-stat">
-                <strong>3</strong>
-                <span>Admin / Support</span>
-              </div>
-              <div class="mini-stat">
-                <strong>MA / M.Sc</strong>
-                <span>Postgraduate Qualifications</span>
-              </div>
-            </div>
-
-            <div style="padding:14px 20px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--cream-dark);">
-              <strong style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);">Principal</strong>
-            </div>
-            <table class="faculty-table">
-              <thead>
-                <tr><th>Name</th><th>Designation</th><th>Qualification</th></tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><strong>Vaishali Milind Churi</strong></td>
-                  <td>Principal</td>
-                  <td>MA, B.Ed</td>
-                </tr>
-              </tbody>
-            </table>
-
-            <div style="padding:14px 20px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--cream-dark);">
-              <strong style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);">Teaching Staff</strong>
-            </div>
-            <table class="faculty-table">
-              <thead>
-                <tr><th>#</th><th>Name</th><th>Qualification</th><th>Role</th></tr>
-              </thead>
-              <tbody>
-                <tr><td>1</td><td>Foram Sukani</td><td>M.Sc, B.Ed</td><td><span class="role-pill rp-pgt">PGT</span></td></tr>
-                <tr><td>2</td><td>Prachi Rahul Pingale</td><td>BE Computer</td><td><span class="role-pill rp-pgt">PGT</span></td></tr>
-                <tr><td>3</td><td>Shikha Ashish Sharma</td><td>M.Com</td><td><span class="role-pill rp-pgt">PGT</span></td></tr>
-                <tr><td>4</td><td>Niharranjan Nayak</td><td>M.Sc, B.Ed</td><td><span class="role-pill rp-pgt">PGT</span></td></tr>
-                <tr><td>5</td><td>Nikita Vinesh Patel</td><td>M.Com, B.Ed</td><td><span class="role-pill rp-pgt">PGT</span></td></tr>
-                <tr><td>6</td><td>Rahul Jignesh Bhavsar</td><td>M.Sc, B.Ed</td><td><span class="role-pill rp-pgt">PGT</span></td></tr>
-                <tr><td>7</td><td>Aasma Shaikh</td><td>M.Com, B.Ed</td><td><span class="role-pill rp-pgt">PGT</span></td></tr>
-                <tr><td>8</td><td>Vaishali Churi</td><td>MA, B.Ed</td><td><span class="role-pill rp-pgt">PGT</span></td></tr>
-                <tr><td>9</td><td>Sweta Patel</td><td>MA, B.Ed</td><td><span class="role-pill rp-pgt">PGT</span></td></tr>
-                <tr><td>10</td><td>Imrana M.D. Karim Siddique</td><td>M.Sc, B.Ed</td><td><span class="role-pill rp-pgt">PGT</span></td></tr>
-                <tr><td>11</td><td>Vanchita Mayavanshi</td><td>B.Sc, B.Ed</td><td><span class="role-pill rp-pgt">PGT</span></td></tr>
-                <tr><td>12</td><td>Nirali J. Bhavsar</td><td>M.Sc, B.Ed</td><td><span class="role-pill rp-pgt">PGT</span></td></tr>
-                <tr><td>13</td><td>Akanksha Saxena</td><td>BA, B.Ed</td><td><span class="role-pill rp-tgt">TGT</span></td></tr>
-                <tr><td>14</td><td>Saurabh Vijay Yadav</td><td>BMS, B.Ed</td><td><span class="role-pill rp-tgt">TGT</span></td></tr>
-                <tr><td>15</td><td>Priti Ranjit Pal</td><td>B.Sc, B.Ed</td><td><span class="role-pill rp-tgt">TGT</span></td></tr>
-                <tr><td>16</td><td>Ruhi Kamble</td><td>B.Com, B.Ed</td><td><span class="role-pill rp-tgt">TGT</span></td></tr>
-                <tr><td>17</td><td>Shalan Kale</td><td>B.Sc, B.Ed</td><td><span class="role-pill rp-tgt">TGT</span></td></tr>
-                <tr><td>18</td><td>Amarpreet C. Mullick</td><td>HSC, ECCEd</td><td><span class="role-pill rp-tgt">TGT</span></td></tr>
-                <tr><td>19</td><td>Durvisha Makvana</td><td>MA</td><td><span class="role-pill rp-tgt">TGT</span></td></tr>
-                <tr><td>20</td><td>Purnima Rakesh Dave</td><td>MA</td><td><span class="role-pill rp-prt">PRT</span></td></tr>
-                <tr><td>21</td><td>Samiksha Anant Padad</td><td>M.Com</td><td><span class="role-pill rp-prt">PRT</span></td></tr>
-                <tr><td>22</td><td>Nikita Gupta</td><td>B.Com, ECCEd</td><td><span class="role-pill rp-prt">PRT</span></td></tr>
-                <tr><td>23</td><td>Anchal Shrikant Pande</td><td>HSC, D.Ed</td><td><span class="role-pill rp-prt">PRT</span></td></tr>
-                <tr><td>24</td><td>Khyati Nishit Shah</td><td>B.Com</td><td><span class="role-pill rp-prt">PRT</span></td></tr>
-                <tr><td>25</td><td>Sunanda Ranjit Jadav</td><td>BA, ECCEd</td><td><span class="role-pill rp-prt">PRT</span></td></tr>
-                <tr><td>26</td><td>Sarita Jaiswal</td><td>BA</td><td><span class="role-pill rp-prt">PRT</span></td></tr>
-                <tr><td>27</td><td>Shyamrao Dubla</td><td>HSC</td><td><span class="role-pill rp-prt">PRT</span></td></tr>
-                <tr><td>28</td><td>Kinjal Rajeshbhai Bariya</td><td>M.Com</td><td><span class="role-pill rp-oth">Admin</span></td></tr>
-                <tr><td>29</td><td>Amisha L. Mahyavanshi</td><td>M.Com</td><td><span class="role-pill rp-oth">Admin</span></td></tr>
-                <tr><td>30</td><td>Neha M. Kamli</td><td>HSC</td><td><span class="role-pill rp-oth">Support</span></td></tr>
-                <tr><td>31</td><td>Eram Banu Siddique</td><td>M.Com</td><td><span class="role-pill rp-oth">Teacher</span></td></tr>
-                <tr><td>32</td><td>Suniya Bhojani</td><td>B.Com</td><td><span class="role-pill rp-oth">Teacher</span></td></tr>
-                <tr><td>33</td><td>Alima Mazaniya</td><td>BA</td><td><span class="role-pill rp-oth">Teacher</span></td></tr>
-                <tr><td>34</td><td>Nilu Rai</td><td>B.Com</td><td><span class="role-pill rp-oth">Teacher</span></td></tr>
-                <tr><td>35</td><td>Ditiksha Surti</td><td>B.Com, B.Ed</td><td><span class="role-pill rp-oth">Teacher</span></td></tr>
-                <tr><td>36</td><td>Dhruvi Bhandari</td><td>M.Sc</td><td><span class="role-pill rp-oth">Teacher</span></td></tr>
-                <tr><td>37</td><td>Shivangi Surti</td><td>HSC</td><td><span class="role-pill rp-oth">Teacher</span></td></tr>
-                <tr><td>38</td><td>Anjali Gore</td><td>BA</td><td><span class="role-pill rp-oth">Teacher</span></td></tr>
-                <tr><td>39</td><td>Uma Singh</td><td>BA</td><td><span class="role-pill rp-oth">Teacher</span></td></tr>
-                <tr><td>40</td><td>Radhika Gupta</td><td>HSC</td><td><span class="role-pill rp-oth">Teacher</span></td></tr>
-                <tr><td>41</td><td>Kinjal Solanki</td><td>B.Com, B.Ed</td><td><span class="role-pill rp-oth">Teacher</span></td></tr>
-                <tr><td>42</td><td>Saloni Mahyavanshi</td><td>M.Com</td><td><span class="role-pill rp-oth">Teacher</span></td></tr>
-                <tr><td>43</td><td>Kamini Bhandari</td><td>B.Ed</td><td><span class="role-pill rp-oth">Teacher</span></td></tr>
-                <tr><td>44</td><td>Prachi Baria</td><td>MA, B.Ed</td><td><span class="role-pill rp-oth">Teacher</span></td></tr>
-                <tr><td>45</td><td>Akash Bhoye</td><td>Part-time</td><td><span class="role-pill rp-oth">Part-time</span></td></tr>
-                <tr><td>46</td><td>Rinkal Mistry</td><td>ECCEd</td><td><span class="role-pill rp-oth">Teacher</span></td></tr>
-                <tr><td>47</td><td>Divyata Panchal</td><td>B.Com, B.Ed</td><td><span class="role-pill rp-oth">Teacher</span></td></tr>
-                <tr><td>48</td><td>Shyam Naidu</td><td>Part-time</td><td><span class="role-pill rp-oth">Part-time</span></td></tr>
-              </tbody>
-            </table>
-
-          </div>
+      </div>
+      <div class="ds-body">
+    <div class="mini-stats"><div class="mini-stat"><strong>34</strong><span>Std. X Appeared</span></div><div class="mini-stat"><strong>34</strong><span>Std. X Passed</span></div><div class="mini-stat"><strong>100%</strong><span>Std. X Pass Rate</span></div><div class="mini-stat"><strong>37</strong><span>Std. XII Total</span></div></div>
+    
+    <table class="result-table">
+      <thead><tr><th>Class</th><th>Stream</th><th>Students Registered</th><th>Students Passed</th><th>Pass Rate</th><th>Academic Year</th></tr></thead>
+      <tbody>
+        
+        <tr class="highlight-row">
+          <td><strong>Std. X</strong></td><td>General</td><td>34</td>
+          <td>34</td><td class="pass-rate">100%</td><td>2024–25</td>
+        </tr>
+        <tr>
+          <td><strong>Std. XII</strong></td><td>Science</td><td>21</td>
+          <td>—</td><td>—</td><td>2024–25</td>
+        </tr>
+        <tr>
+          <td><strong>Std. XII</strong></td><td>Commerce</td><td>16</td>
+          <td>—</td><td>—</td><td>2024–25</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="disc-note"><p><strong>Note:</strong> Subject-wise performance data and topper details are available from the school office on request. CBSE results are also verifiable at <a href="https://cbseresults.nic.in" target="_blank" rel="noopener">cbseresults.nic.in</a>.</p></div></div>
+    </div>
+    <div class="disclosure-section" id="staff">
+      <div class="ds-header">
+        <div class="ds-letter">D</div>
+        <div>
+          <h2>Staff Details</h2>
+          <p>Teaching and non-teaching staff composition</p>
         </div>
-
-        <!-- E. INFRASTRUCTURE -->
-        <div class="disclosure-section" id="infrastructure">
-          <div class="ds-header">
-            <div class="ds-letter">E</div>
-            <div>
-              <h2>School Infrastructure</h2>
-              <p>Campus facilities and physical resources</p>
-            </div>
-          </div>
-          <div class="ds-body">
-            <div class="infra-grid">
-              <div class="infra-item">
-                <strong>Total Campus Area</strong>
-                <span>8 Acres</span>
-              </div>
-              <div class="infra-item">
-                <strong>Total Classrooms</strong>
-                <span>27 Classrooms</span>
-              </div>
-              <div class="infra-item">
-                <strong>Science Laboratories</strong>
-                <span>3 Labs (Physics, Chemistry, Biology)</span>
-              </div>
-              <div class="infra-item">
-                <strong>Computer Laboratory</strong>
-                <span>1 Lab — with internet access</span>
-              </div>
-              <div class="infra-item">
-                <strong>Library</strong>
-                <span><span class="check">✓ Available</span> — Books &amp; Reference Materials</span>
-              </div>
-              <div class="infra-item">
-                <strong>Internet Facility</strong>
-                <span><span class="check">✓ Available</span> — Campus-wide</span>
-              </div>
-              <div class="infra-item">
-                <strong>CCTV Surveillance</strong>
-                <span><span class="check">✓ Installed</span> — Full campus coverage</span>
-              </div>
-              <div class="infra-item">
-                <strong>Sports Facility</strong>
-                <span>Cricket, Skating, Yoga, Fitness grounds</span>
-              </div>
-              <div class="infra-item">
-                <strong>Drinking Water</strong>
-                <span><span class="check">✓ Available</span> — Purified water supply</span>
-              </div>
-              <div class="infra-item">
-                <strong>Toilet Blocks</strong>
-                <span>Separate for Boys, Girls &amp; Staff</span>
-              </div>
-              <div class="infra-item">
-                <strong>Barrier-Free Access</strong>
-                <span>Ramps and accessible facilities</span>
-              </div>
-              <div class="infra-item">
-                <strong>Fire Extinguishers</strong>
-                <span><span class="check">✓ Installed</span> — As per safety norms</span>
-              </div>
-            </div>
-
-            <table class="info-table" style="border-top:1px solid var(--line);">
-              <tbody>
-                <tr>
-                  <td>School Location Type</td>
-                  <td>Urban — Umbergaon town, near shoreline</td>
-                </tr>
-                <tr>
-                  <td>Transport Facility</td>
-                  <td>Available for students on request</td>
-                </tr>
-                <tr>
-                  <td>Medical Room</td>
-                  <td>First-aid facility available on campus</td>
-                </tr>
-                <tr>
-                  <td>Canteen / Tuck Shop</td>
-                  <td>Available on campus</td>
-                </tr>
-                <tr>
-                  <td>Auditorium / Hall</td>
-                  <td>Available for assemblies and cultural events</td>
-                </tr>
-              </tbody>
-            </table>
-
-          </div>
+      </div>
+      <div class="ds-body">
+      <div class="mini-stats"><div class="mini-stat"><strong>48</strong><span>Total Staff</span></div><div class="mini-stat"><strong>12</strong><span>PGT</span></div><div class="mini-stat"><strong>7</strong><span>TGT</span></div><div class="mini-stat"><strong>8</strong><span>PRT</span></div><div class="mini-stat"><strong>16</strong><span>Teachers</span></div><div class="mini-stat"><strong>2</strong><span>Part-time</span></div><div class="mini-stat"><strong>3</strong><span>Admin / Support</span></div><div class="mini-stat"><strong>MA / M.Sc</strong><span>Postgraduate Qualifications</span></div></div>
+      
+        <div class="disc-subhead"><strong>Principal</strong></div>
+        <table class="faculty-table">
+          <thead><tr><th>Name</th><th>Designation</th><th>Qualification</th></tr></thead>
+          <tbody><tr><td><strong>Vaishali Milind Churi</strong></td><td>Principal</td><td>MA, B.Ed</td></tr></tbody>
+        </table>
+      
+        <div class="disc-subhead"><strong>Teaching Staff</strong></div>
+        <table class="faculty-table">
+          <thead><tr><th>#</th><th>Name</th><th>Qualification</th><th>Role</th></tr></thead>
+          <tbody><tr><td>1</td><td>Foram Sukani</td><td>M.Sc, B.Ed</td><td><span class="role-pill rp-pgt">PGT</span></td></tr><tr><td>2</td><td>Prachi Rahul Pingale</td><td>BE Computer</td><td><span class="role-pill rp-pgt">PGT</span></td></tr><tr><td>3</td><td>Shikha Ashish Sharma</td><td>M.Com</td><td><span class="role-pill rp-pgt">PGT</span></td></tr><tr><td>4</td><td>Niharranjan Nayak</td><td>M.Sc, B.Ed</td><td><span class="role-pill rp-pgt">PGT</span></td></tr><tr><td>5</td><td>Nikita Vinesh Patel</td><td>M.Com, B.Ed</td><td><span class="role-pill rp-pgt">PGT</span></td></tr><tr><td>6</td><td>Rahul Jignesh Bhavsar</td><td>M.Sc, B.Ed</td><td><span class="role-pill rp-pgt">PGT</span></td></tr><tr><td>7</td><td>Aasma Shaikh</td><td>M.Com, B.Ed</td><td><span class="role-pill rp-pgt">PGT</span></td></tr><tr><td>8</td><td>Vaishali Churi</td><td>MA, B.Ed</td><td><span class="role-pill rp-pgt">PGT</span></td></tr><tr><td>9</td><td>Sweta Patel</td><td>MA, B.Ed</td><td><span class="role-pill rp-pgt">PGT</span></td></tr><tr><td>10</td><td>Imrana M.D. Karim Siddique</td><td>M.Sc, B.Ed</td><td><span class="role-pill rp-pgt">PGT</span></td></tr><tr><td>11</td><td>Vanchita Mayavanshi</td><td>B.Sc, B.Ed</td><td><span class="role-pill rp-pgt">PGT</span></td></tr><tr><td>12</td><td>Nirali J. Bhavsar</td><td>M.Sc, B.Ed</td><td><span class="role-pill rp-pgt">PGT</span></td></tr><tr><td>13</td><td>Akanksha Saxena</td><td>BA, B.Ed</td><td><span class="role-pill rp-tgt">TGT</span></td></tr><tr><td>14</td><td>Saurabh Vijay Yadav</td><td>BMS, B.Ed</td><td><span class="role-pill rp-tgt">TGT</span></td></tr><tr><td>15</td><td>Priti Ranjit Pal</td><td>B.Sc, B.Ed</td><td><span class="role-pill rp-tgt">TGT</span></td></tr><tr><td>16</td><td>Ruhi Kamble</td><td>B.Com, B.Ed</td><td><span class="role-pill rp-tgt">TGT</span></td></tr><tr><td>17</td><td>Shalan Kale</td><td>B.Sc, B.Ed</td><td><span class="role-pill rp-tgt">TGT</span></td></tr><tr><td>18</td><td>Amarpreet C. Mullick</td><td>HSC, ECCEd</td><td><span class="role-pill rp-tgt">TGT</span></td></tr><tr><td>19</td><td>Durvisha Makvana</td><td>MA</td><td><span class="role-pill rp-tgt">TGT</span></td></tr><tr><td>20</td><td>Purnima Rakesh Dave</td><td>MA</td><td><span class="role-pill rp-prt">PRT</span></td></tr><tr><td>21</td><td>Samiksha Anant Padad</td><td>M.Com</td><td><span class="role-pill rp-prt">PRT</span></td></tr><tr><td>22</td><td>Nikita Gupta</td><td>B.Com, ECCEd</td><td><span class="role-pill rp-prt">PRT</span></td></tr><tr><td>23</td><td>Anchal Shrikant Pande</td><td>HSC, D.Ed</td><td><span class="role-pill rp-prt">PRT</span></td></tr><tr><td>24</td><td>Khyati Nishit Shah</td><td>B.Com</td><td><span class="role-pill rp-prt">PRT</span></td></tr><tr><td>25</td><td>Sunanda Ranjit Jadav</td><td>BA, ECCEd</td><td><span class="role-pill rp-prt">PRT</span></td></tr><tr><td>26</td><td>Sarita Jaiswal</td><td>BA</td><td><span class="role-pill rp-prt">PRT</span></td></tr><tr><td>27</td><td>Shyamrao Dubla</td><td>HSC</td><td><span class="role-pill rp-prt">PRT</span></td></tr><tr><td>28</td><td>Kinjal Rajeshbhai Bariya</td><td>M.Com</td><td><span class="role-pill rp-oth">Admin</span></td></tr><tr><td>29</td><td>Amisha L. Mahyavanshi</td><td>M.Com</td><td><span class="role-pill rp-oth">Admin</span></td></tr><tr><td>30</td><td>Neha M. Kamli</td><td>HSC</td><td><span class="role-pill rp-oth">Support</span></td></tr><tr><td>31</td><td>Eram Banu Siddique</td><td>M.Com</td><td><span class="role-pill rp-oth">Teacher</span></td></tr><tr><td>32</td><td>Suniya Bhojani</td><td>B.Com</td><td><span class="role-pill rp-oth">Teacher</span></td></tr><tr><td>33</td><td>Alima Mazaniya</td><td>BA</td><td><span class="role-pill rp-oth">Teacher</span></td></tr><tr><td>34</td><td>Nilu Rai</td><td>B.Com</td><td><span class="role-pill rp-oth">Teacher</span></td></tr><tr><td>35</td><td>Ditiksha Surti</td><td>B.Com, B.Ed</td><td><span class="role-pill rp-oth">Teacher</span></td></tr><tr><td>36</td><td>Dhruvi Bhandari</td><td>M.Sc</td><td><span class="role-pill rp-oth">Teacher</span></td></tr><tr><td>37</td><td>Shivangi Surti</td><td>HSC</td><td><span class="role-pill rp-oth">Teacher</span></td></tr><tr><td>38</td><td>Anjali Gore</td><td>BA</td><td><span class="role-pill rp-oth">Teacher</span></td></tr><tr><td>39</td><td>Uma Singh</td><td>BA</td><td><span class="role-pill rp-oth">Teacher</span></td></tr><tr><td>40</td><td>Radhika Gupta</td><td>HSC</td><td><span class="role-pill rp-oth">Teacher</span></td></tr><tr><td>41</td><td>Kinjal Solanki</td><td>B.Com, B.Ed</td><td><span class="role-pill rp-oth">Teacher</span></td></tr><tr><td>42</td><td>Saloni Mahyavanshi</td><td>M.Com</td><td><span class="role-pill rp-oth">Teacher</span></td></tr><tr><td>43</td><td>Kamini Bhandari</td><td>B.Ed</td><td><span class="role-pill rp-oth">Teacher</span></td></tr><tr><td>44</td><td>Prachi Baria</td><td>MA, B.Ed</td><td><span class="role-pill rp-oth">Teacher</span></td></tr><tr><td>45</td><td>Akash Bhoye</td><td>Part-time</td><td><span class="role-pill rp-oth">Part-time</span></td></tr><tr><td>46</td><td>Rinkal Mistry</td><td>ECCEd</td><td><span class="role-pill rp-oth">Teacher</span></td></tr><tr><td>47</td><td>Divyata Panchal</td><td>B.Com, B.Ed</td><td><span class="role-pill rp-oth">Teacher</span></td></tr><tr><td>48</td><td>Shyam Naidu</td><td>Part-time</td><td><span class="role-pill rp-oth">Part-time</span></td></tr></tbody>
+        </table></div>
+    </div>
+    <div class="disclosure-section" id="infrastructure">
+      <div class="ds-header">
+        <div class="ds-letter">E</div>
+        <div>
+          <h2>School Infrastructure</h2>
+          <p>Campus facilities and physical resources</p>
         </div>
-
+      </div>
+      <div class="ds-body">
+    
+    <div class="infra-grid">
+      
+      <div class="infra-item">
+        <strong>Total Campus Area</strong>
+        <span>8 Acres</span>
+      </div>
+      <div class="infra-item">
+        <strong>Total Classrooms</strong>
+        <span>27 Classrooms</span>
+      </div>
+      <div class="infra-item">
+        <strong>Science Laboratories</strong>
+        <span>3 Labs (Physics, Chemistry, Biology)</span>
+      </div>
+      <div class="infra-item">
+        <strong>Computer Laboratory</strong>
+        <span>1 Lab — with internet access</span>
+      </div>
+      <div class="infra-item">
+        <strong>Library</strong>
+        <span><span class="check">✓ Available</span> — Books &amp; Reference Materials</span>
+      </div>
+      <div class="infra-item">
+        <strong>Internet Facility</strong>
+        <span><span class="check">✓ Available</span> — Campus-wide</span>
+      </div>
+      <div class="infra-item">
+        <strong>CCTV Surveillance</strong>
+        <span><span class="check">✓ Installed</span> — Full campus coverage</span>
+      </div>
+      <div class="infra-item">
+        <strong>Sports Facility</strong>
+        <span>Cricket, Skating, Yoga, Fitness grounds</span>
+      </div>
+      <div class="infra-item">
+        <strong>Drinking Water</strong>
+        <span><span class="check">✓ Available</span> — Purified water supply</span>
+      </div>
+      <div class="infra-item">
+        <strong>Toilet Blocks</strong>
+        <span>Separate for Boys, Girls &amp; Staff</span>
+      </div>
+      <div class="infra-item">
+        <strong>Barrier-Free Access</strong>
+        <span>Ramps and accessible facilities</span>
+      </div>
+      <div class="infra-item">
+        <strong>Fire Extinguishers</strong>
+        <span><span class="check">✓ Installed</span> — As per safety norms</span>
+      </div>
+    </div>
+    
+    <table class="info-table" style="border-top:1px solid var(--line);">
+      <tbody>
+        <tr><td>School Location Type</td><td>Urban — Umbergaon town, near shoreline</td></tr><tr><td>Transport Facility</td><td>Available for students on request</td></tr><tr><td>Medical Room</td><td>First-aid facility available on campus</td></tr><tr><td>Canteen / Tuck Shop</td><td>Available on campus</td></tr><tr><td>Auditorium / Hall</td><td>Available for assemblies and cultural events</td></tr>
+      </tbody>
+    </table></div>
+    </div>
+      <!-- /cms:content -->
       </div><!-- /content -->
     </div><!-- /page-body -->
 
     <!-- FOOTER -->
-    <div class="page-footer">
-      <strong>The Agratha Academy CBSE</strong><br>
-      CBSE Affiliation No. 430444 · School Code 11442<br>
-      M.M High School Compound, Behind Police Station, Umbergaon – 396170, Dist. Valsad, Gujarat<br>
-      <a href="tel:+919537331834">+91 9537331834</a> &nbsp;·&nbsp;
-      <a href="mailto:anahitanajmi@gmail.com">anahitanajmi@gmail.com</a><br><br>
-      <a href="index.html">← Back to Main Website</a> &nbsp;·&nbsp;
-      This disclosure page is maintained as per CBSE Affiliation Bye-Laws (Appendix IX).
+    <div class="page-footer"><!-- cms:footer --><strong>The Agratha Academy CBSE</strong><br>CBSE Affiliation No. 430444 · School Code 11442<br>M.M High School Compound, Behind Police Station, Umbergaon – 396170, Dist. Valsad, Gujarat<br><a href="tel:+919537331834">+91 9537331834</a>  ·  <a href="mailto:anahitanajmi@gmail.com">anahitanajmi@gmail.com</a><br><br><a href="index.html">← Back to Main Website</a>  ·  This disclosure page is maintained as per CBSE Affiliation Bye-Laws (Appendix IX).<!-- /cms:footer -->
     </div>
 
   </body>

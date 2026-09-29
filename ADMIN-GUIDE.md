@@ -31,6 +31,16 @@ The Home page, Disclosure page and *Menu, footer & site* screens show a
 - Hidden sections appear faded in the preview. Visitors don't see them.
 - **Undo changes** puts back the last saved version.
 
+### Safety nets
+- **Drafts:** unsaved edits are kept in your browser. If the tab closes or
+  the phone locks before you press Save, reopen the section. It offers
+  **Restore them**.
+- **History:** *🕘 History* in a section's editor lists its last 30
+  versions. **Load this version** puts one back in the form and preview.
+  Press Save to publish it.
+- **Recently deleted:** deleted sections can be brought back from the link
+  under the section list.
+
 ### Arranging sections
 - Drag the **⋮⋮** handle to move a section. On phones, use the **⋯** menu:
   Move up / Move down.
@@ -82,10 +92,21 @@ In the Supabase dashboard for the **NAMASMARAN** project → *Authentication*:
 - **Security:** row-level security lets anyone *read* published content.
   Only signed-in users listed in `aa_admins` can write. See
   `supabase/migrations/0001_agratha_cms.sql`.
-- **Public pages** (`index.html`, `mandatory-public-disclosure.html`) still
-  contain the original HTML as a fallback. `assets/cms/site.js` /
-  `disclosure.js` fetch the content and re-render it. They cache the last
-  version in the browser, so repeat visits paint instantly.
+- **Public pages** (`index.html`, `mandatory-public-disclosure.html`) hold
+  the content as static HTML between `<!-- cms:… -->` markers. The GitHub
+  Action *Refresh static page content*
+  (`.github/workflows/refresh-static.yml` → `scripts/prerender.mjs`) copies
+  the latest database content into them. It runs every 3 hours, and
+  anyone can trigger it with “Run workflow” in the Actions tab. This keeps
+  Google, link previews and no-JavaScript visitors up to date.
+  - In the browser, `assets/cms/site.js` / `disclosure.js` fetch the live
+    content. They re-render only if its fingerprint differs from the
+    `cms-content-hash` meta tag, so an up-to-date page never flickers.
+  - If the database can't be reached, the HTML simply stays as it is.
+- **Version history:** `aa_revisions` (migration `0002_revisions.sql`). A
+  trigger stores the previous version of a section or setting on every
+  change or delete. The last 30 per item are kept, and only admins can
+  read them.
 - **Adding a new section type:** add its fields to `assets/cms/schema.js`
   and a renderer to `assets/cms/render-home.js` (or `render-disclosure.js`).
   The admin form is generated from the schema.
@@ -96,3 +117,6 @@ In the Supabase dashboard for the **NAMASMARAN** project → *Authentication*:
   no traffic. Normal site visits count as traffic. If it ever pauses, the
   site shows the built-in fallback content until the project is resumed from
   the Supabase dashboard.
+- **Tests:** `npm install && npm test` runs the unit tests and the browser
+  tests (`tests/`). They use a fake database, so no network is needed. They
+  run automatically on every pull request (`.github/workflows/test.yml`).

@@ -1,0 +1,47 @@
+# Keeps the static HTML of the public pages in sync with what admins
+# publish from /admin, so search engines, link previews and visitors
+# without JavaScript see current content. See scripts/prerender.mjs.
+name: Refresh static page content
+
+on:
+  schedule:
+    - cron: '23 */3 * * *'   # every 3 hours
+  workflow_dispatch:           # "Run workflow" button in the Actions tab
+  push:
+    branches: [main]
+    paths:
+      - 'assets/cms/**'
+      - 'scripts/prerender.mjs'
+      - '.github/workflows/refresh-static.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-static
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Render pages from the database
+        run: node scripts/prerender.mjs
+
+      - name: Commit if anything changed
+        run: |
+          if git diff --quiet; then
+            echo "Static pages already up to date."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "Refresh static page content from the admin panel"
+          git push
