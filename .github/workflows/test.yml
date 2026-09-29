@@ -26,7 +26,7 @@ jobs:
 
       - name: Check JavaScript syntax
         run: |
-          find admin assets scripts supabase tests -type f \\( -name '*.js' -o -name '*.mjs' \\) -print0 | xargs -0 -n1 node --check
+          find admin assets scripts supabase tests -type f \( -name '*.js' -o -name '*.mjs' \) -print0 | xargs -0 -n1 node --check
           node --check script.js
 
       - name: Run tests
