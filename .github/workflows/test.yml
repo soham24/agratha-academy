@@ -24,8 +24,20 @@ jobs:
           npm install --no-audit --no-fund
           npx playwright install --with-deps chromium
 
+      - name: Check JavaScript syntax
+        run: |
+          find admin assets scripts supabase tests -type f \\( -name '*.js' -o -name '*.mjs' \\) -print0 | xargs -0 -n1 node --check
+          node --check script.js
+
       - name: Run tests
         run: npm test
+
+      - name: Smoke test static page generation
+        run: |
+          node --input-type=module -e "import fs from 'node:fs'; import { DEFAULT_SITE, DEFAULT_HOME_SECTIONS, DEFAULT_DISCLOSURE, DEFAULT_DISCLOSURE_SECTIONS } from './assets/cms/defaults.js'; fs.writeFileSync('/tmp/agratha-prerender.json', JSON.stringify({ home: { settings: { site: DEFAULT_SITE }, sections: DEFAULT_HOME_SECTIONS, announcements: [] }, disclosure: { settings: { disclosure: DEFAULT_DISCLOSURE }, sections: DEFAULT_DISCLOSURE_SECTIONS } }));"
+          node scripts/prerender.mjs --data /tmp/agratha-prerender.json
+          test -s index.html
+          test -s mandatory-public-disclosure.html
 
       - name: Keep screenshots
         if: always()
