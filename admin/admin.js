@@ -741,6 +741,7 @@ async function viewSections(view, page) {
   const data = await loadPageData(page);
   let sections = data.sections;
   let selected = null;
+  const visibilityPending = new Set();
 
   view.classList.add('view-builder');
   view.innerHTML = `
@@ -800,7 +801,7 @@ async function viewSections(view, page) {
           </span>
         </button>
         <label class="switch small" title="${s.visible ? 'Shown on website – click to hide' : 'Hidden – click to show on website'}">
-          <input type="checkbox" data-act="visible" ${s.visible ? 'checked' : ''} aria-label="Show ${esc(sectionName(s, types))} on website">
+          <input type="checkbox" data-act="visible" ${s.visible ? 'checked' : ''} ${visibilityPending.has(s.id) ? 'disabled' : ''} aria-label="Show ${esc(sectionName(s, types))} on website">
           <span class="switch-ui"></span>
         </label>
         <a class="btn btn-small btn-primary" href="#/${page}/${s.id}">Edit</a>
@@ -906,11 +907,23 @@ async function viewSections(view, page) {
     if (e.target.dataset.act !== 'visible') return;
     const row = e.target.closest('.sec-row');
     const s = sections.find((x) => x.id === row.dataset.id);
-    s.visible = e.target.checked;
+    if (visibilityPending.has(s.id)) return;
+    const previous = s.visible;
+    const next = e.target.checked;
+    visibilityPending.add(s.id);
+    s.visible = next;
     selected = s.id;
     renderList();
     refreshPreview();
-    await run(sb.from('aa_sections').update({ visible: s.visible }).eq('id', s.id), s.visible ? 'Now shown on the website' : 'Hidden from the website');
+    try {
+      await run(sb.from('aa_sections').update({ visible: next }).eq('id', s.id), next ? 'Now shown on the website' : 'Hidden from the website');
+    } catch {
+      s.visible = previous;
+      refreshPreview();
+    } finally {
+      visibilityPending.delete(s.id);
+      renderList();
+    }
   });
 
   // ── Drag and drop (mouse); the ⋯ menu covers touch screens ──
@@ -1143,7 +1156,9 @@ async function viewSectionEdit(view, page, id) {
     try { localStorage.removeItem(draftKey); } catch { /* ignore */ }
   };
 
+  let changeVersion = 0;
   const onChange = () => {
+    changeVersion++;
     setDirty(true);
     saveBtn.disabled = false;
     discardBtn.disabled = false;
@@ -1222,18 +1237,27 @@ async function viewSectionEdit(view, page, id) {
   });
 
   saveBtn.addEventListener('click', async () => {
-    const anchor = slug(meta.anchor);
+    const version = changeVersion;
+    const savedMeta = { ...meta, anchor: slug(meta.anchor) };
+    const savedData = structuredClone(data);
     saveBtn.disabled = true;
     state.textContent = 'Saving…';
     try {
-      await run(sb.from('aa_sections').update({ label: meta.label, anchor, visible: meta.visible, data }).eq('id', id), meta.visible ? 'Saved — live on the website' : 'Saved (section is hidden)');
-      meta.anchor = anchor;
-      Object.assign(section, meta, { data: structuredClone(data) });
+      await run(sb.from('aa_sections').update({ ...savedMeta, data: savedData }).eq('id', id), savedMeta.visible ? 'Saved — live on the website' : 'Saved (section is hidden)');
+      Object.assign(section, savedMeta, { data: savedData });
+      if (changeVersion !== version) {
+        // The request saved its snapshot; edits made during the request still need saving.
+        saveBtn.disabled = false;
+        state.textContent = 'New changes are still unsaved — press Save again.';
+        state.className = 'save-state is-dirty';
+        return;
+      }
+      meta.anchor = savedMeta.anchor;
       clearDraft();
       setDirty(false);
       discardBtn.disabled = true;
       const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      state.textContent = `✓ Saved at ${time}${meta.visible ? ' — visitors see it now.' : ' — hidden from visitors.'}`;
+      state.textContent = `✓ Saved at ${time}${savedMeta.visible ? ' — visitors see it now.' : ' — hidden from visitors.'}`;
       state.className = 'save-state is-saved';
     } catch {
       saveBtn.disabled = false;

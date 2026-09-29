@@ -313,6 +313,39 @@ const check = (cond, label) => {
   check(db.aa_sections.find((s) => s.id === aboutId).data.heading.includes('Edited by admin'), 'Ctrl+S saves to DB');
   check((await page.textContent('#save-state')).includes('Saved'), 'shows saved state');
 
+  // An edit made while Save is in flight must stay unsaved until a second Save.
+  let releaseSave;
+  let signalSave;
+  const saveStarted = new Promise((resolve) => { signalSave = resolve; });
+  const saveGate = new Promise((resolve) => { releaseSave = resolve; });
+  let delayNextSave = true;
+  const delaySectionSave = async (route) => {
+    if (delayNextSave && route.request().method() === 'PATCH' && route.request().url().includes(`id=eq.${aboutId}`)) {
+      delayNextSave = false;
+      signalSave();
+      await saveGate;
+      await fakeSupabase(route);
+    } else {
+      await route.fallback();
+    }
+  };
+  await page.route('**/rest/v1/aa_sections?**', delaySectionSave);
+  await heading.fill('First change before Save');
+  await page.click('#save');
+  await saveStarted;
+  await heading.fill('Second change while saving');
+  releaseSave();
+  await page.waitForFunction((sectionId) => document.querySelector('#save-state')?.textContent?.includes('still unsaved'), aboutId);
+  check(db.aa_sections.find((s) => s.id === aboutId).data.heading === 'First change before Save', 'first save writes its original snapshot');
+  check(await page.isEnabled('#save') && await page.locator('body.is-dirty').count() === 1, 'newer edits stay unsaved after earlier save completes');
+  await page.click('#save');
+  await page.waitForFunction((sectionId) => document.querySelector('#save-state')?.textContent?.includes('Saved at'), aboutId);
+  check(db.aa_sections.find((s) => s.id === aboutId).data.heading === 'Second change while saving', 'second save publishes newer edits');
+  await page.unroute('**/rest/v1/aa_sections?**', delaySectionSave);
+  await heading.fill('A Century of Learning.\n*Edited by admin.*');
+  await page.click('#save');
+  await page.waitForFunction(() => document.querySelector('#save-state')?.textContent?.includes('Saved at'));
+
   // undo
   await heading.fill('Something wrong');
   page.once('dialog', (d) => d.accept());
@@ -360,6 +393,24 @@ const check = (cond, label) => {
   check(await frame.locator(`.cms-block.is-hidden-section[data-cms-id="${vid.id}"]`).count() === 1, 'hidden section shown dimmed in preview');
   await page.locator(`.sec-row[data-id="${vid.id}"] .switch`).click();
   await page.waitForTimeout(400);
+
+  // A failed visibility update must restore the switch and preview.
+  let rejectVisibility = true;
+  const failVisibility = async (route) => {
+    if (rejectVisibility && route.request().method() === 'PATCH' && route.request().url().includes(`id=eq.${vid.id}`)) {
+      rejectVisibility = false;
+      await route.fulfill({ status: 503, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify({ message: 'Temporary server failure' }) });
+    } else {
+      await route.fallback();
+    }
+  };
+  await page.route('**/rest/v1/aa_sections?**', failVisibility);
+  await page.locator(`.sec-row[data-id="${vid.id}"] .switch`).click();
+  await page.waitForSelector('.toast-error');
+  await page.waitForFunction((sectionId) => document.querySelector(`.sec-row[data-id="${sectionId}"] [data-act="visible"]`)?.disabled === false, vid.id);
+  check(vid.visible === true && await page.locator(`.sec-row[data-id="${vid.id}"] [data-act="visible"]`).isChecked(), 'failed visibility change restores the on switch');
+  check(await frame.locator(`.cms-block.is-hidden-section[data-cms-id="${vid.id}"]`).count() === 0, 'failed visibility change restores preview');
+  await page.unroute('**/rest/v1/aa_sections?**', failVisibility);
 
   // ── Conditional fields (leadership) ──
   const leaderId = db.aa_sections.find((s) => s.type === 'leadership').id;
@@ -511,8 +562,8 @@ const check = (cond, label) => {
   await pub.locator('.site-footer').screenshot({ path: `${OUT}/sec-footer.png` });
 }
 
-// The only expected console error is the deliberate wrong-password login (HTTP 400).
-const unexpected = errors.filter((e) => !e.includes('status of 400'));
+// Expected HTTP errors: wrong-password login (400) and the deliberately failed visibility update (503).
+const unexpected = errors.filter((e) => !e.includes('status of 400') && !e.includes('status of 503'));
 console.log(`\n${failures} failed; unexpected errors:`, unexpected.length ? '\n' + unexpected.join('\n') : 'none');
 await browser.close();
 server.close();
