@@ -4,7 +4,7 @@
    the same markup/classes as the original hand-written page.
    ═══════════════════════════════════════════ */
 
-import { esc, inline, paragraphs, rich, lines, initials, safeUrl, videoEmbed, formatDate } from './format.js';
+import { esc, inline, paragraphs, rich, lines, initials, safeUrl, youtubeId, formatDate } from './format.js';
 import { icon } from './icons.js';
 
 const idAttr = (anchor) => (anchor ? ` id="${esc(anchor)}"` : '');
@@ -353,13 +353,10 @@ function gallery(d, anchor) {
 }
 
 function video(d, anchor) {
-  const v = videoEmbed(d.video);
-  let player = '<div class="cms-video-empty">No video added yet.</div>';
-  if (v?.kind === 'iframe') {
-    player = `<iframe src="${esc(v.src)}" title="${esc((d.heading ?? 'Video').replace(/[*\n]/g, ' '))}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
-  } else if (v?.kind === 'video') {
-    player = `<video controls preload="metadata" playsinline${d.poster ? ` poster="${src(d.poster)}"` : ''}><source src="${esc(v.src)}"></video>`;
-  }
+  const id = youtubeId(d.video);
+  const player = id
+    ? `<iframe src="https://www.youtube-nocookie.com/embed/${esc(id)}?rel=0" title="${esc((d.heading ?? 'Video').replace(/[*\n]/g, ' '))}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`
+    : '<div class="cms-video-empty">No video added yet.</div>';
   const dark = d.theme !== 'light';
   return `
     <section${idAttr(anchor)} class="cms-video-section${dark ? ' is-dark' : ''}">
