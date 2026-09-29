@@ -313,6 +313,36 @@ const check = (cond, label) => {
   check(db.aa_sections.find((s) => s.id === aboutId).data.heading.includes('Edited by admin'), 'Ctrl+S saves to DB');
   check((await page.textContent('#save-state')).includes('Saved'), 'shows saved state');
 
+  // An edit made while Save is in flight must stay unsaved until a second Save.
+  let releaseSave;
+  let signalSave;
+  const saveStarted = new Promise((resolve) => { signalSave = resolve; });
+  const saveGate = new Promise((resolve) => { releaseSave = resolve; });
+  let delayNextSave = true;
+  const delaySectionSave = async (route) => {
+    if (delayNextSave && route.request().method() === 'PATCH' && route.request().url().includes(`id=eq.${aboutId}`)) {
+      delayNextSave = false;
+      signalSave();
+      await saveGate;
+      await fakeSupabase(route);
+    } else {
+      await route.fallback();
+    }
+  };
+  await page.route('**/rest/v1/aa_sections?**', delaySectionSave);
+  await heading.fill('First change before Save');
+  await page.click('#save');
+  await saveStarted;
+  await heading.fill('Second change while saving');
+  releaseSave();
+  await page.waitForFunction((sectionId) => document.querySelector('#save-state')?.textContent?.includes('still unsaved'), aboutId);
+  check(db.aa_sections.find((s) => s.id === aboutId).data.heading === 'First change before Save', 'first save writes its original snapshot');
+  check(await page.isEnabled('#save') && await page.locator('body.is-dirty').count() === 1, 'newer edits stay unsaved after earlier save completes');
+  await page.click('#save');
+  await page.waitForFunction((sectionId) => document.querySelector('#save-state')?.textContent?.includes('Saved at'), aboutId);
+  check(db.aa_sections.find((s) => s.id === aboutId).data.heading === 'Second change while saving', 'second save publishes newer edits');
+  await page.unroute('**/rest/v1/aa_sections?**', delaySectionSave);
+
   // undo
   await heading.fill('Something wrong');
   page.once('dialog', (d) => d.accept());
