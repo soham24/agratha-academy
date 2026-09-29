@@ -1,13 +1,16 @@
 /* ═══════════════════════════════════════════
    HOME PAGE BOOT
-   1. Paint instantly from the last visit's cached content (if any).
-   2. Fetch the latest content from the database and re-paint if changed.
-   3. If the database is unreachable, the static HTML in index.html stays.
+   index.html already contains the content as of the last prerender
+   (scripts/prerender.mjs), stamped with a content fingerprint.
+   1. If this browser has newer content cached, paint that straight away.
+   2. Fetch the latest content; re-paint only if it differs from what is
+      on screen, so an up-to-date page never flickers.
+   3. If the database is unreachable, the HTML stays as it is.
    ═══════════════════════════════════════════ */
 
 import { loadPage, readCache, writeCache } from './api.js';
 import { renderSections, renderNav, renderFooter } from './render-home.js';
-import { esc, inline, paragraphs, safeUrl } from './format.js';
+import { esc, inline, paragraphs, safeUrl, contentHash } from './format.js';
 import { icon } from './icons.js';
 import { DEFAULT_SITE } from './defaults.js';
 import { IS_PREVIEW, startPreview } from './preview-mode.js';
@@ -16,11 +19,6 @@ const root = document.documentElement;
 const main = document.getElementById('main');
 let painted = null;
 
-function reveal() {
-  root.classList.remove('cms-pending');
-}
-// Never keep the page hidden for long, whatever happens.
-const revealTimer = setTimeout(reveal, 2500);
 
 function applySettings(s) {
   const brand = document.querySelector('.site-header .brand');
@@ -172,36 +170,32 @@ function renderWhatsApp(number) {
 
 // ── Boot ─────────────────────────────────────────────────────────
 async function boot() {
+  const staticHash = document.querySelector('meta[name="cms-content-hash"]')?.content ?? '';
+  const onScreen = () => (painted ? contentHash(painted) : staticHash);
+
   const cached = readCache('home');
-  if (cached?.sections?.length) paint(cached);
-  if (painted) { clearTimeout(revealTimer); reveal(); }
+  if (cached?.sections?.length && contentHash(cached) !== staticHash) paint(cached);
 
   const fresh = await loadPage('home', { announcements: true });
   let data = painted;
 
   if (fresh?.sections?.length) {
-    const changed = JSON.stringify(fresh) !== JSON.stringify(cached);
-    if (changed) {
-      writeCache('home', fresh);
-      // Don't yank the page out from under someone who is already reading.
-      if (!painted || window.scrollY < 200) paint(fresh);
-    }
+    writeCache('home', fresh);
+    // Don't yank the page out from under someone who is already reading.
+    if (contentHash(fresh) !== onScreen() && (!painted || window.scrollY < 200)) paint(fresh);
     data = fresh;
   }
 
-  clearTimeout(revealTimer);
-  reveal();
-
-  if (!data) return; // database unreachable & no cache: static HTML stays
+  if (!data) return; // database unreachable & nothing cached: the HTML stays
   const settings = { ...DEFAULT_SITE, ...(data.settings?.site ?? {}) };
   const announcements = data.announcements ?? [];
+  renderWhatsApp(settings.whatsapp);
   renderTicker(settings, announcements);
   wireNoticeLinks(() => announcements);
   maybeShowPopup(settings, announcements);
 }
 
 if (IS_PREVIEW) {
-  clearTimeout(revealTimer);
   startPreview((payload) => {
     if (!paint(payload)) main.innerHTML = '<p style="padding:160px 24px;text-align:center;color:#7A6A6B">This page has no visible sections yet.</p>';
   });

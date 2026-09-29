@@ -1,0 +1,14 @@
+{
+  "name": "agratha-academy-website",
+  "private": true,
+  "type": "module",
+  "description": "The Agratha Academy website: static pages + admin panel (content in Supabase).",
+  "scripts": {
+    "test": "node tests/unit.mjs && node tests/e2e.mjs",
+    "prerender": "node scripts/prerender.mjs"
+  },
+  "devDependencies": {
+    "@supabase/supabase-js": "^2.117.2",
+    "playwright": "^1.56.1"
+  }
+}

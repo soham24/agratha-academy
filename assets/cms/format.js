@@ -32,16 +32,20 @@ function isExternal(url) {
 
 /** Inline markup, single line or multi-line (newlines become <br>). */
 export function inline(text) {
-  let out = esc(text);
-  out = out.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, label, url) => {
+  // Links are swapped for placeholders first so that * or ** inside a URL
+  // can't be turned into <em>/<strong> tags inside the href.
+  const links = [];
+  let out = esc(text).replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, label, url) => {
     const href = safeUrl(url.replace(/&amp;/g, '&'));
     if (!href) return label;
     const ext = isExternal(href) || /\.pdf$/i.test(href);
-    return `<a href="${esc(href)}"${ext ? ' target="_blank" rel="noopener"' : ''}>${label}</a>`;
+    links.push({ open: `<a href="${esc(href)}"${ext ? ' target="_blank" rel="noopener"' : ''}>` });
+    return `\u0000${links.length - 1}\u0001${label}\u0002`;
   });
   out = out.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
   out = out.replace(/\*([^*]+)\*/g, '<em>$1</em>');
   out = out.replace(/\r?\n/g, '<br>');
+  out = out.replace(/\u0000(\d+)\u0001/g, (_, i) => links[Number(i)].open).replace(/\u0002/g, '</a>');
   return out;
 }
 
@@ -121,4 +125,16 @@ export function formatDate(value) {
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return '';
   return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+/** Short fingerprint of some content (FNV-1a), used to tell whether the
+ *  prerendered HTML already matches what the database returns. */
+export function contentHash(value) {
+  const str = JSON.stringify(value);
+  let h = 0x811c9dc5;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return (h >>> 0).toString(16);
 }

@@ -30,7 +30,6 @@ function focusBlock(id, scroll) {
 export function startPreview(paint) {
   const root = document.documentElement;
   root.classList.add('cms-preview');
-  root.classList.remove('cms-pending');
   root.style.scrollBehavior = 'auto';
 
   const css = document.createElement('link');

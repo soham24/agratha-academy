@@ -131,3 +131,15 @@ export function renderDisclosureNav(sections) {
       return s.anchor ? `<a href="#${esc(s.anchor)}"><span class="sec-label">${letter}</span> ${esc(label)}</a>` : '';
     }).join('');
 }
+
+export function renderDisclosureHeader(s) {
+  return `
+        ${s.badge ? `<div class="page-badge">${esc(s.badge)}</div>` : ''}
+        <h1>${esc(s.title)}</h1>
+        ${s.intro ? `<p>${inline(s.intro)}</p>` : ''}
+        ${s.updated ? `<div class="updated-tag">Last Updated: <span>${esc(s.updated)}</span></div>` : ''}`;
+}
+
+export function renderDisclaimer(s) {
+  return `<strong>${esc(s.sidebar_title)}</strong>${inline(s.sidebar_text)}`;
+}

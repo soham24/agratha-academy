@@ -5,7 +5,7 @@
    every edit so the caller can track unsaved changes.
    ═══════════════════════════════════════════ */
 
-import { esc } from '../assets/cms/format.js';
+import { esc, videoEmbed } from '../assets/cms/format.js';
 import { icon } from '../assets/cms/icons.js';
 
 let uid = 0;
@@ -19,6 +19,11 @@ const nextId = () => `f${++uid}`;
 export function buildForm(fields, value, ctx) {
   const wrap = document.createElement('div');
   wrap.className = 'form-grid';
+  // Fields with `showIf(value)` only appear when they apply (e.g. a
+  // committee member card has no heading), re-checked after every edit.
+  const conditional = [];
+  const sync = () => conditional.forEach(([row, f]) => { row.hidden = !f.showIf(value); });
+  const localCtx = { ...ctx, onChange: () => { sync(); ctx.onChange?.(); } };
   for (const field of fields) {
     if (field.group) {
       const h = document.createElement('h3');
@@ -27,8 +32,11 @@ export function buildForm(fields, value, ctx) {
       wrap.append(h);
       continue;
     }
-    wrap.append(buildField(field, value, ctx));
+    const row = buildField(field, value, localCtx);
+    if (field.showIf) conditional.push([row, field]);
+    wrap.append(row);
   }
+  sync();
   return wrap;
 }
 
@@ -173,11 +181,23 @@ function mediaField(field, obj, ctx, row, id, help) {
   function renderPreview() {
     const url = input.value.trim();
     const resolved = ctx.resolveUrl ? ctx.resolveUrl(url) : url;
+    if (kind === 'video' && !status.classList.contains('is-busy')) {
+      const v = url ? videoEmbed(url) : null;
+      const known = /youtu|vimeo|drive\.google/i.test(url);
+      status.className = `upload-status ${!url ? '' : v && (known || /\.(mp4|webm|mov|m4v)(\?|$)/i.test(url) || url.includes('/storage/')) ? 'is-ok' : 'is-error'}`;
+      status.textContent = !url ? ''
+        : status.classList.contains('is-ok')
+          ? (known ? `✓ ${/vimeo/i.test(url) ? 'Vimeo' : /drive/i.test(url) ? 'Google Drive' : 'YouTube'} video — it will play on the website` : '✓ Video file')
+          : 'This doesn’t look like a video link. On YouTube press Share → Copy, then paste here.';
+    }
     if (!url) { preview.innerHTML = `<span class="media-empty">${icon(kind === 'video' ? 'play' : kind === 'file' ? 'document' : 'star', { size: 22 })}</span>`; return; }
     if (kind === 'image' || /\.(jpe?g|png|webp|gif|avif|svg)(\?|$)/i.test(url)) {
       preview.innerHTML = `<img src="${esc(resolved)}" alt="">`;
     } else if (kind === 'video') {
-      preview.innerHTML = `<span class="media-empty">${icon('play', { size: 22 })}</span>`;
+      const yt = url.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{11})/i);
+      preview.innerHTML = yt
+        ? `<img src="https://img.youtube.com/vi/${yt[1]}/mqdefault.jpg" alt="">`
+        : `<span class="media-empty">${icon('play', { size: 22 })}</span>`;
     } else {
       preview.innerHTML = `<a href="${esc(resolved)}" target="_blank" rel="noopener" class="media-empty" title="Open file">${icon('document', { size: 22 })}</a>`;
     }
