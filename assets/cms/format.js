@@ -105,11 +105,28 @@ export function slug(text) {
     .slice(0, 40);
 }
 
-/** The 11-character video id from any kind of YouTube link, or null. */
+/** The 11-character video id from a genuine YouTube URL, or null. */
 export function youtubeId(url) {
-  const m = String(url ?? '').trim()
-    .match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{11})/i);
-  return m ? m[1] : null;
+  let parsed;
+  try {
+    parsed = new URL(String(url ?? '').trim());
+  } catch {
+    return null;
+  }
+  if (!['http:', 'https:'].includes(parsed.protocol)) return null;
+
+  const host = parsed.hostname.toLowerCase();
+  let id;
+  if (host === 'youtu.be' || host === 'www.youtu.be') {
+    id = parsed.pathname.slice(1);
+  } else if (['youtube.com', 'www.youtube.com', 'm.youtube.com', 'www.youtube-nocookie.com'].includes(host)) {
+    if (parsed.pathname === '/watch') id = parsed.searchParams.get('v');
+    else {
+      const match = parsed.pathname.match(/^\/(?:embed|shorts|live)\/([^/]+)\/?$/);
+      id = match?.[1];
+    }
+  }
+  return /^[\w-]{11}$/.test(id ?? '') ? id : null;
 }
 
 /** Turn a YouTube / Vimeo / Google Drive link into an embeddable URL. */
