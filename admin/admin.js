@@ -1143,7 +1143,9 @@ async function viewSectionEdit(view, page, id) {
     try { localStorage.removeItem(draftKey); } catch { /* ignore */ }
   };
 
+  let changeVersion = 0;
   const onChange = () => {
+    changeVersion++;
     setDirty(true);
     saveBtn.disabled = false;
     discardBtn.disabled = false;
@@ -1222,18 +1224,27 @@ async function viewSectionEdit(view, page, id) {
   });
 
   saveBtn.addEventListener('click', async () => {
-    const anchor = slug(meta.anchor);
+    const version = changeVersion;
+    const savedMeta = { ...meta, anchor: slug(meta.anchor) };
+    const savedData = structuredClone(data);
     saveBtn.disabled = true;
     state.textContent = 'Saving…';
     try {
-      await run(sb.from('aa_sections').update({ label: meta.label, anchor, visible: meta.visible, data }).eq('id', id), meta.visible ? 'Saved — live on the website' : 'Saved (section is hidden)');
-      meta.anchor = anchor;
-      Object.assign(section, meta, { data: structuredClone(data) });
+      await run(sb.from('aa_sections').update({ ...savedMeta, data: savedData }).eq('id', id), savedMeta.visible ? 'Saved — live on the website' : 'Saved (section is hidden)');
+      Object.assign(section, savedMeta, { data: savedData });
+      if (changeVersion !== version) {
+        // The request saved its snapshot; edits made during the request still need saving.
+        saveBtn.disabled = false;
+        state.textContent = 'New changes are still unsaved — press Save again.';
+        state.className = 'save-state is-dirty';
+        return;
+      }
+      meta.anchor = savedMeta.anchor;
       clearDraft();
       setDirty(false);
       discardBtn.disabled = true;
       const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      state.textContent = `✓ Saved at ${time}${meta.visible ? ' — visitors see it now.' : ' — hidden from visitors.'}`;
+      state.textContent = `✓ Saved at ${time}${savedMeta.visible ? ' — visitors see it now.' : ' — hidden from visitors.'}`;
       state.className = 'save-state is-saved';
     } catch {
       saveBtn.disabled = false;
