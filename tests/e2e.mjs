@@ -331,7 +331,7 @@ const check = (cond, label) => {
   await page.waitForTimeout(400);
   const vid = db.aa_sections.find((s) => s.type === 'video');
   check(!!vid && sorted()[2]?.id === vid.id, 'new section inserted at chosen position (3rd)');
-  await page.locator('#form-slot input[placeholder^="Paste a YouTube"]').fill('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+  await page.locator('#form-slot .field-video input').fill('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
   await page.waitForTimeout(400);
   check(await frame.locator('.cms-video-section iframe').count() === 1, 'video appears in preview');
   await page.click('#save');
@@ -377,12 +377,16 @@ const check = (cond, label) => {
 
   // ── Video link validation ──
   await page.goto(`http://localhost:8765/admin/#/home/${vid.id}`);
-  const vInput = page.locator('#form-slot input[placeholder^="Paste a YouTube"]');
+  const vInput = page.locator('#form-slot .field-video input');
   await vInput.fill('hello there');
   check(await page.locator('.field-video .upload-status.is-error').isVisible(), 'bad video link shows a warning');
   await vInput.fill('https://youtu.be/dQw4w9WgXcQ');
   check((await page.locator('.field-video .upload-status').textContent()).includes('YouTube video'), 'YouTube link confirmed');
   check((await page.locator('.field-video .media-preview img').getAttribute('src'))?.includes('img.youtube.com'), 'YouTube thumbnail shown');
+  check(await page.locator('.field-video input[type=file], .field-video [data-pick]').count() === 0, 'video field has no upload / library option');
+  await page.locator('.field-video').screenshot({ path: `${OUT}/admin-video-field.png` });
+  await vInput.fill('https://vimeo.com/123456');
+  check(await page.locator('.field-video .upload-status.is-error').isVisible(), 'non-YouTube link rejected');
   page.once('dialog', (d) => d.accept());
   await page.click('#discard');
   await page.waitForTimeout(300);

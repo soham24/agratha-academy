@@ -11,11 +11,12 @@ The website can now be edited from a browser (phone or computer) at
 | Scrolling notice bar at the top | **Announcements** (tick “Show in the scrolling notice bar”) |
 | Notice board section | **Announcements** (tick “Show on the notice board”) |
 | Every section of the home page: text, photos, people, timings, results, contact… | **Home page → Edit** |
-| Add a new section (video, photo gallery, text + photo, downloads/PDFs, staff directory, Google Form / map embed, banner…) | **Home page → + Add section** |
+| Add a new section (YouTube video, photo gallery, text + photo, downloads/PDFs, staff directory, Google Form / map embed, banner…) | **Home page → + Add section** |
 | Remove / hide / reorder sections | **Home page** (✕, the switch, ↑ ↓ arrows) |
 | Mandatory Public Disclosure page (tables, PDFs, staff list, results, infrastructure) | **Disclosure page** |
 | School name, logo, top menu, footer, WhatsApp button, Google title/description | **Menu, footer & site** |
-| Upload photos, PDFs, videos | **Photos & files** (or the Upload button next to any photo field) |
+| Upload photos and PDFs | **Photos & files** (or the Upload button next to any photo field) |
+| Show a video | Upload it to YouTube (Public or Unlisted), then paste its link in a **Video** section. Videos are not uploaded to the website. |
 | Who can log in | **Admins** |
 
 Changes appear on the website as soon as you press **Save** (or Ctrl + S).
@@ -88,7 +89,7 @@ In the Supabase dashboard for the **NAMASMARAN** project → *Authentication*:
   - `aa_settings`: `site` and `disclosure` settings JSON
   - `aa_announcements`: pop-up / ticker / notice board
   - `aa_admins`, `aa_admin_invites`: who may edit
-  - Storage bucket `agratha-media`: uploaded files (max 50 MB each)
+  - Storage bucket `agratha-media`: uploaded photos and PDFs (max 50 MB each; videos are YouTube-only)
 - **Security:** row-level security lets anyone *read* published content.
   Only signed-in users listed in `aa_admins` can write. See
   `supabase/migrations/0001_agratha_cms.sql`.

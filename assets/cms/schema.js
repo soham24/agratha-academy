@@ -4,7 +4,7 @@
    its forms from these definitions; the renderers read the same keys.
 
    Field types:
-     text, textarea, rich, url, image, file, video, icon, select,
+     text, textarea, rich, url, image, file, youtube, icon, select,
      bool, number, datetime, lines, list (with nested `fields`)
    ═══════════════════════════════════════════ */
 
@@ -239,17 +239,16 @@ export const HOME_TYPES = {
 
   video: {
     label: 'Video',
-    description: 'Play a YouTube / Vimeo / Google Drive video, or an uploaded video file.',
+    description: 'Play a YouTube video on the page.',
     fields: [
       kicker, heading,
       { key: 'text', label: 'Text', type: 'textarea', rows: 3, help: TEXT_HELP },
-      { key: 'video', label: 'Video', type: 'video', help: 'Paste a YouTube link, or upload an MP4 (max 50 MB).' },
-      { key: 'poster', label: 'Cover image shown before the video plays (optional)', type: 'image', showIf: (d) => !!d.video && !/youtu|vimeo|drive\.google/i.test(d.video) },
+      { key: 'video', label: 'YouTube link', type: 'youtube', help: 'On YouTube, press Share → Copy link, then paste it here. The video must be Public or Unlisted.' },
       { key: 'theme', label: 'Background', type: 'select', options: [
         { value: 'light', label: 'Light' }, { value: 'dark', label: 'Dark' },
       ] },
     ],
-    defaults: { kicker: 'Watch', heading: 'Life at *Agratha.*', text: '', video: '', poster: '', theme: 'dark' },
+    defaults: { kicker: 'Watch', heading: 'Life at *Agratha.*', text: '', video: '', theme: 'dark' },
   },
 
   text: {

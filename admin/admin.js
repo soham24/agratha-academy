@@ -92,13 +92,15 @@ async function shrinkImage(file) {
 
 function folderFor(type) {
   if (type.startsWith('image/')) return 'images';
-  if (type.startsWith('video/')) return 'videos';
   return 'documents';
 }
 
 async function uploadFile(file, progress = () => {}) {
   if (file.size > 50 * 1024 * 1024) {
-    throw new Error('File is larger than 50 MB. For long videos, upload to YouTube and paste the link instead.');
+    throw new Error('File is larger than 50 MB.');
+  }
+  if (file.type.startsWith('video/')) {
+    throw new Error('Videos can’t be uploaded here. Upload the video to YouTube, then paste its link in a Video section.');
   }
   progress('Preparing…');
   const prepared = await shrinkImage(file);
@@ -114,7 +116,7 @@ async function uploadFile(file, progress = () => {}) {
 }
 
 async function listMedia() {
-  const folders = ['images', 'documents', 'videos'];
+  const folders = ['images', 'documents'];
   const results = await Promise.all(folders.map((f) =>
     sb.storage.from(MEDIA_BUCKET).list(f, { limit: 1000, sortBy: { column: 'created_at', order: 'desc' } })));
   const files = [];
@@ -136,7 +138,7 @@ async function listMedia() {
   return files.sort((a, b) => String(b.created).localeCompare(String(a.created)));
 }
 
-const KIND_FOLDERS = { image: ['images'], file: ['documents', 'images'], video: ['videos'] };
+const KIND_FOLDERS = { image: ['images'], file: ['documents', 'images'] };
 
 function pickMedia(kind) {
   return new Promise(async (resolve) => {
@@ -165,7 +167,7 @@ function pickMedia(kind) {
 function mediaTile(f, i, choosing = false) {
   const thumb = f.folder === 'images'
     ? `<img src="${esc(f.url)}" loading="lazy" alt="">`
-    : `<span class="media-file-icon">${f.folder === 'videos' ? '▶' : 'PDF'}</span>`;
+    : '<span class="media-file-icon">PDF</span>';
   return `
     <figure class="media-tile">
       ${choosing ? `<button type="button" class="media-thumb" data-choose="${i}">${thumb}</button>` : `<a class="media-thumb" href="${esc(f.url)}" target="_blank" rel="noopener">${thumb}</a>`}
@@ -1313,11 +1315,11 @@ async function viewMedia(view) {
       <div class="page-head">
         <div>
           <h1 class="page-title">Photos & files</h1>
-          <p class="muted">Upload once, use anywhere. Large photos are resized automatically. Max 50 MB per file.</p>
+          <p class="muted">Photos and PDFs — upload once, use anywhere. Large photos are resized automatically. Max 50 MB per file. For videos, use YouTube.</p>
         </div>
         <label class="btn btn-primary">
           + Upload files
-          <input type="file" id="uploader" multiple accept="image/*,application/pdf,video/*" hidden>
+          <input type="file" id="uploader" multiple accept="image/*,application/pdf" hidden>
         </label>
       </div>
       <div class="upload-log" id="upload-log"></div>
@@ -1325,7 +1327,6 @@ async function viewMedia(view) {
         <button type="button" class="chip is-active" data-f="all">All</button>
         <button type="button" class="chip" data-f="images">Photos</button>
         <button type="button" class="chip" data-f="documents">PDFs</button>
-        <button type="button" class="chip" data-f="videos">Videos</button>
       </div>
       <div id="media-list"><p class="muted">Loading…</p></div>
     </div>`;

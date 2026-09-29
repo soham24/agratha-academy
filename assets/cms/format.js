@@ -105,12 +105,20 @@ export function slug(text) {
     .slice(0, 40);
 }
 
+/** The 11-character video id from any kind of YouTube link, or null. */
+export function youtubeId(url) {
+  const m = String(url ?? '').trim()
+    .match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{11})/i);
+  return m ? m[1] : null;
+}
+
 /** Turn a YouTube / Vimeo / Google Drive link into an embeddable URL. */
 export function videoEmbed(url) {
   const u = String(url ?? '').trim();
   if (!u) return null;
-  let m = u.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{11})/i);
-  if (m) return { kind: 'iframe', src: `https://www.youtube-nocookie.com/embed/${m[1]}?rel=0` };
+  const yt = youtubeId(u);
+  if (yt) return { kind: 'iframe', src: `https://www.youtube-nocookie.com/embed/${yt}?rel=0` };
+  let m;
   m = u.match(/vimeo\.com\/(?:video\/)?(\d+)/i);
   if (m) return { kind: 'iframe', src: `https://player.vimeo.com/video/${m[1]}` };
   m = u.match(/drive\.google\.com\/file\/d\/([\w-]+)/i);

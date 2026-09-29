@@ -5,7 +5,7 @@
    every edit so the caller can track unsaved changes.
    ═══════════════════════════════════════════ */
 
-import { esc, videoEmbed } from '../assets/cms/format.js';
+import { esc, youtubeId } from '../assets/cms/format.js';
 import { icon } from '../assets/cms/icons.js';
 
 let uid = 0;
@@ -122,8 +122,10 @@ function buildField(field, obj, ctx) {
 
     case 'image':
     case 'file':
-    case 'video':
       return mediaField(field, obj, ctx, row, id, help);
+
+    case 'youtube':
+      return youtubeField(field, obj, ctx, row, id, help);
 
     case 'list':
       return listField(field, obj, ctx, row);
@@ -144,8 +146,8 @@ function toLocalInput(iso) {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
-// ── Image / file / video ─────────────────────────────────────────
-const ACCEPT = { image: 'image/*', file: 'application/pdf,image/*', video: 'video/*' };
+// ── Image / file ─────────────────────────────────────────────────
+const ACCEPT = { image: 'image/*', file: 'application/pdf,image/*' };
 
 function mediaField(field, obj, ctx, row, id, help) {
   const kind = field.type;
@@ -154,7 +156,7 @@ function mediaField(field, obj, ctx, row, id, help) {
     <div class="media-input">
       <div class="media-preview"></div>
       <div class="media-controls">
-        <input type="text" id="${id}" value="${esc(obj[field.key] ?? '')}" placeholder="${kind === 'video' ? 'Paste a YouTube link, or upload / drop a video' : 'Upload, drop a file here, or choose from library'}" spellcheck="false">
+        <input type="text" id="${id}" value="${esc(obj[field.key] ?? '')}" placeholder="Upload, drop a file here, or choose from library" spellcheck="false">
         <div class="media-buttons">
           <label class="btn btn-small">
             ${icon('download', { size: 15, stroke: 2, attrs: 'style="transform:rotate(180deg)"' })} Upload
@@ -181,23 +183,9 @@ function mediaField(field, obj, ctx, row, id, help) {
   function renderPreview() {
     const url = input.value.trim();
     const resolved = ctx.resolveUrl ? ctx.resolveUrl(url) : url;
-    if (kind === 'video' && !status.classList.contains('is-busy')) {
-      const v = url ? videoEmbed(url) : null;
-      const known = /youtu|vimeo|drive\.google/i.test(url);
-      status.className = `upload-status ${!url ? '' : v && (known || /\.(mp4|webm|mov|m4v)(\?|$)/i.test(url) || url.includes('/storage/')) ? 'is-ok' : 'is-error'}`;
-      status.textContent = !url ? ''
-        : status.classList.contains('is-ok')
-          ? (known ? `✓ ${/vimeo/i.test(url) ? 'Vimeo' : /drive/i.test(url) ? 'Google Drive' : 'YouTube'} video — it will play on the website` : '✓ Video file')
-          : 'This doesn’t look like a video link. On YouTube press Share → Copy, then paste here.';
-    }
-    if (!url) { preview.innerHTML = `<span class="media-empty">${icon(kind === 'video' ? 'play' : kind === 'file' ? 'document' : 'star', { size: 22 })}</span>`; return; }
+    if (!url) { preview.innerHTML = `<span class="media-empty">${icon(kind === 'file' ? 'document' : 'star', { size: 22 })}</span>`; return; }
     if (kind === 'image' || /\.(jpe?g|png|webp|gif|avif|svg)(\?|$)/i.test(url)) {
       preview.innerHTML = `<img src="${esc(resolved)}" alt="">`;
-    } else if (kind === 'video') {
-      const yt = url.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{11})/i);
-      preview.innerHTML = yt
-        ? `<img src="https://img.youtube.com/vi/${yt[1]}/mqdefault.jpg" alt="">`
-        : `<span class="media-empty">${icon('play', { size: 22 })}</span>`;
     } else {
       preview.innerHTML = `<a href="${esc(resolved)}" target="_blank" rel="noopener" class="media-empty" title="Open file">${icon('document', { size: 22 })}</a>`;
     }
@@ -242,6 +230,38 @@ function mediaField(field, obj, ctx, row, id, help) {
     e.preventDefault();
     uploadPicked(file);
   });
+  return row;
+}
+
+// ── YouTube link (videos are never uploaded) ─────────────────────
+function youtubeField(field, obj, ctx, row, id, help) {
+  row.classList.add('field-video');
+  row.innerHTML = `
+    <label for="${id}">${esc(field.label)}</label>
+    <div class="media-input">
+      <div class="media-preview"></div>
+      <div class="media-controls">
+        <input type="text" id="${id}" value="${esc(obj[field.key] ?? '')}" placeholder="https://youtu.be/…" inputmode="url" spellcheck="false">
+        <div class="upload-status" role="status"></div>
+      </div>
+    </div>${help}`;
+  const input = row.querySelector('input');
+  const preview = row.querySelector('.media-preview');
+  const status = row.querySelector('.upload-status');
+
+  function check() {
+    const url = input.value.trim();
+    const vid = youtubeId(url);
+    preview.innerHTML = vid
+      ? `<img src="https://img.youtube.com/vi/${vid}/mqdefault.jpg" alt="">`
+      : `<span class="media-empty">${icon('play', { size: 22 })}</span>`;
+    status.className = `upload-status${!url ? '' : vid ? ' is-ok' : ' is-error'}`;
+    status.textContent = !url ? ''
+      : vid ? '✓ YouTube video — it will play on the website'
+        : 'This is not a YouTube link. On YouTube press Share → Copy link, then paste it here.';
+  }
+  check();
+  input.addEventListener('input', () => { obj[field.key] = input.value.trim(); check(); ctx.onChange?.(); });
   return row;
 }
 
