@@ -394,6 +394,24 @@ const check = (cond, label) => {
   await page.locator(`.sec-row[data-id="${vid.id}"] .switch`).click();
   await page.waitForTimeout(400);
 
+  // A failed visibility update must restore the switch and preview.
+  let rejectVisibility = true;
+  const failVisibility = async (route) => {
+    if (rejectVisibility && route.request().method() === 'PATCH' && route.request().url().includes(`id=eq.${vid.id}`)) {
+      rejectVisibility = false;
+      await route.fulfill({ status: 503, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify({ message: 'Temporary server failure' }) });
+    } else {
+      await route.fallback();
+    }
+  };
+  await page.route('**/rest/v1/aa_sections?**', failVisibility);
+  await page.locator(`.sec-row[data-id="${vid.id}"] .switch`).click();
+  await page.waitForSelector('.toast-error');
+  await page.waitForFunction((sectionId) => document.querySelector(`.sec-row[data-id="${sectionId}"] [data-act="visible"]`)?.disabled === false, vid.id);
+  check(vid.visible === true && await page.locator(`.sec-row[data-id="${vid.id}"] [data-act="visible"]`).isChecked(), 'failed visibility change restores the on switch');
+  check(await frame.locator(`.cms-block.is-hidden-section[data-cms-id="${vid.id}"]`).count() === 0, 'failed visibility change restores preview');
+  await page.unroute('**/rest/v1/aa_sections?**', failVisibility);
+
   // ── Conditional fields (leadership) ──
   const leaderId = db.aa_sections.find((s) => s.type === 'leadership').id;
   await page.goto(`http://localhost:8765/admin/#/home/${leaderId}`);
@@ -544,8 +562,8 @@ const check = (cond, label) => {
   await pub.locator('.site-footer').screenshot({ path: `${OUT}/sec-footer.png` });
 }
 
-// The only expected console error is the deliberate wrong-password login (HTTP 400).
-const unexpected = errors.filter((e) => !e.includes('status of 400'));
+// Expected HTTP errors: wrong-password login (400) and the deliberately failed visibility update (503).
+const unexpected = errors.filter((e) => !e.includes('status of 400') && !e.includes('status of 503'));
 console.log(`\n${failures} failed; unexpected errors:`, unexpected.length ? '\n' + unexpected.join('\n') : 'none');
 await browser.close();
 server.close();
