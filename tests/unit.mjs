@@ -1,6 +1,6 @@
 globalThis.location = { host: 'theagrathaacademy.in' };
 // Unit tests for the text/link/video helpers.  Run: node tests/unit.mjs
-const { inline, videoEmbed, rich } = await import('../assets/cms/format.js');
+const { inline, videoEmbed, rich, youtubeId } = await import('../assets/cms/format.js');
 const cases = [
   ['[a](https://x.com/*b*) and *em*', 'href="https://x.com/*b*"'],
   ['**bold** [Call](tel:+91123)', '<strong>bold</strong> <a href="tel:+91123">Call</a>'],
@@ -20,6 +20,21 @@ for (const [input, expect] of cases) {
 for (const [u, want] of [['https://youtu.be/dQw4w9WgXcQ','youtube-nocookie'],['https://www.youtube.com/shorts/dQw4w9WgXcQ','youtube-nocookie'],['https://vimeo.com/123','vimeo'],['javascript:x', null]]) {
   const v = videoEmbed(u); const ok = want ? v?.src.includes(want) : v === null; if (!ok) bad++;
   console.log(ok ? 'PASS' : 'FAIL', u, '→', v?.src ?? null);
+}
+for (const [url, expected] of [
+  ['https://www.youtube.com/watch?feature=share&v=dQw4w9WgXcQ&t=2', 'dQw4w9WgXcQ'],
+  ['https://m.youtube.com/shorts/dQw4w9WgXcQ', 'dQw4w9WgXcQ'],
+  ['https://youtu.be/dQw4w9WgXcQ?t=2', 'dQw4w9WgXcQ'],
+  ['https://evil.example/youtube.com/watch?v=dQw4w9WgXcQ', null],
+  ['https://youtube.com.evil.example/watch?v=dQw4w9WgXcQ', null],
+  ['https://youtube.com/watch?v=dQw4w9WgXcQextra', null],
+  ['https://youtu.be/dQw4w9WgXcQ/another', null],
+  ['javascript:youtube.com/watch?v=dQw4w9WgXcQ', null],
+]) {
+  const actual = youtubeId(url);
+  const ok = actual === expected;
+  if (!ok) bad++;
+  console.log(ok ? 'PASS' : 'FAIL', 'YouTube URL', url, '→', actual);
 }
 const r = rich('## Head\n\n- a\n- b\n\n1. x\n2. y\n\nPara'); const ok = r.includes('<h3>Head</h3>') && r.includes('<ul><li>a</li>') && r.includes('<ol>'); if (!ok) bad++;
 console.log(ok ? 'PASS' : 'FAIL', 'rich blocks');
